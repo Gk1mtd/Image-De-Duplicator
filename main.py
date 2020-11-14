@@ -1,7 +1,8 @@
 from tkinter import *
-root = Tk()
-canvas = Canvas(root, width = 300, height = 300)
-canvas.pack()
-img = PhotoImage(file="test1.png")
-canvas.create_image(20,20, anchor=NW, image=img)
-mainloop()  
+
+tk_root = Tk()
+tk_canvas = Canvas(tk_root, width=900, height=500)
+tk_canvas.pack()
+img_1 = PhotoImage(file="test1.png")
+tk_canvas.create_image(20, 20, anchor=NW, image=img_1)
+mainloop()
