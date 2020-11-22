@@ -33,4 +33,4 @@ from image_similarity_calculator import ImageSimilarityCalculator
 
 # to calculate SSIM (similarity) of to pictures given as setImageA() and setImageB()
 obj_imageSimilarityCalculator = ImageSimilarityCalculator()
-obj_imageSimilarityCalculator.ssim_calculation("other_image.jpg", "modified.jpg")
+obj_imageSimilarityCalculator.ssim_calculation("original.png", "modified.png")
