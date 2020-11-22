@@ -1,3 +1,4 @@
+import datetime
 from tkinter import *
 from tkinter import filedialog as fd
 from PIL import ImageTk, Image
@@ -31,6 +32,10 @@ from image_similarity_calculator import ImageSimilarityCalculator
 #
 # mainloop()
 
+start = datetime.datetime.now()
 # to calculate SSIM (similarity) of to pictures given as setImageA() and setImageB()
 obj_imageSimilarityCalculator = ImageSimilarityCalculator()
 obj_imageSimilarityCalculator.ssim_calculation("original.png", "modified.png")
+
+finish = datetime.datetime.now()
+print(finish-start)
