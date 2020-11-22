@@ -2,8 +2,8 @@ import datetime
 from image_similarity_calculator import ImageSimilarityCalculator
 from gui import GUI
 
-
-obj_gui = GUI()
+# starts GUI
+# obj_gui = GUI()
 
 start = datetime.datetime.now()
 # to calculate SSIM (similarity) of to pictures given as setImageA() and setImageB()
