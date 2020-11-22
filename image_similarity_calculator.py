@@ -11,8 +11,8 @@ class ImageSimilarityCalculator:
         imageB = cv2.imread(str(pathToFileB))
         imageA = cv2.resize(imageA, self.imageSize)
         imageB = cv2.resize(imageB, self.imageSize)
-        # imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
-        # imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
+        imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
+        imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
         (score, diff) = structural_similarity(imageA, imageB, multichannel=True, full=True)
         print("SSIM after reducing filesize: " + str(score))
         return score
