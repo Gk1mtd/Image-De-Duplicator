@@ -7,6 +7,9 @@ class GUI:
     def __init__(self):
         canvas_size = (500, 300)
         tk_root = Tk()  # creating tkinter root
+        tk_root.geometry("600x400")
+        tk_root.title("Image DeDuplicator v0.1")
+
         tk_canvas = Canvas(tk_root, width=canvas_size[0], height=canvas_size[1])  # creating canvas
         tk_canvas.pack()  # marrying canvas and root
         # region ImageLoading
