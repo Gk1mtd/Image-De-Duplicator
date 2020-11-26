@@ -13,7 +13,11 @@ class GUI:
         tk_root.title(windowTitle)
         tk_root.bind("<Control-q>", self.quit)
 
-        myLabels = []
+        # myLabels = []
+        # for i in range(5):
+        #     print("Start")
+        #     myLabels.append(Label(tk_root, text="BLAAAAAAA"))
+        #     myLabels[i].pack()
         myLabel = Label(tk_root, text="Original File")
         myLabel.pack()
 
