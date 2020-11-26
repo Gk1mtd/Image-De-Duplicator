@@ -4,12 +4,20 @@ from PIL import ImageTk, Image
 
 
 class GUI:
+    def quit(self, event):
+        sys.exit("Age less than 18")
+
     def __init__(self, windowSize, windowTitle):
         tk_root = Tk()  # creating tkinter root
         tk_root.geometry((str(windowSize[0]) + "x" + str(windowSize[1])))
         tk_root.title(windowTitle)
+        tk_root.bind("<Control-q>", self.quit)
 
-        tk_canvas = Canvas(tk_root, width=windowSize[0], height=windowSize[1]/2)  # creating canvas
+        myLabels = []
+        myLabel = Label(tk_root, text="Original File")
+        myLabel.pack()
+
+        tk_canvas = Canvas(tk_root, width=windowSize[0], height=windowSize[1] / 2)  # creating canvas
         tk_canvas.pack()  # marrying canvas and root
 
         # region ImageLoading
@@ -30,6 +38,7 @@ class GUI:
         def browse_file():
             new_path = fd.askdirectory()
             print(new_path)
+
         # Creating Button to search for a folderpath
         browseButton = Button(master=tk_root, text='Browse', width=6, command=browse_file)
         browseButton.pack()
