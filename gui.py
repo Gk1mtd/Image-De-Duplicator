@@ -5,7 +5,7 @@ from PIL import ImageTk, Image
 
 class GUI:
     def quit(self, event):
-        sys.exit("Age less than 18")
+        sys.exit("ShortCut Quit")
 
     def __init__(self, windowSize, windowTitle):
         tk_root = Tk()  # creating tkinter root
@@ -19,10 +19,10 @@ class GUI:
         #     myLabels.append(Label(tk_root, text="BLAAAAAAA"))
         #     myLabels[i].pack()
         myLabel = Label(tk_root, text="Original File")
-        myLabel.pack()
+        myLabel.grid(row=0, column=0)
 
         tk_canvas = Canvas(tk_root, width=windowSize[0], height=windowSize[1] / 2)  # creating canvas
-        tk_canvas.pack()  # marrying canvas and root
+        tk_canvas.grid(row=1, column=0)  # marrying canvas and root
 
         # region ImageLoading
         # loading images, resizing them
@@ -45,6 +45,6 @@ class GUI:
 
         # Creating Button to search for a folderpath
         browseButton = Button(master=tk_root, text='Browse', width=6, command=browse_file)
-        browseButton.pack()
+        browseButton.grid(row=2, column=0)
 
         mainloop()
