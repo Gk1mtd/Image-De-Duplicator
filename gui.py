@@ -4,6 +4,8 @@ from PIL import ImageTk, Image
 
 
 class GUI:
+    folderpath = ""
+
     def quit(self, event):
         sys.exit("ShortCut Quit")
 
@@ -21,22 +23,22 @@ class GUI:
         myLabel = Label(tk_root, text="Image Preview")
         myLabel.grid(row=0, column=0, columnspan=2)
 
-        tk_canvas = Canvas(tk_root, width=windowSize[0], height=windowSize[1] / 2)  # creating canvas
-        tk_canvas.grid(row=1, column=0, columnspan=2)  # marrying canvas and root
 
         # region ImageLoading
         # loading images, resizing them
-        img_1 = Image.open("original.png")
-        img_1 = img_1.resize((int(windowSize[0] / 2), int(windowSize[1] / 2),))
-        img_1 = ImageTk.PhotoImage(img_1)
-        img_2 = Image.open("original.png")
-        img_2 = img_2.resize((int(windowSize[0] / 2), int(windowSize[1] / 2),))
-        img_2 = ImageTk.PhotoImage(img_2)
+        imgOriginal = Image.open("original.png")
+        imgOriginal = imgOriginal.resize((int(windowSize[0] / 2), int(windowSize[1] / 2),))
+        imgOriginal = ImageTk.PhotoImage(imgOriginal)
+        img_Similar = Image.open("modified.jpg")
+        img_Similar = img_Similar.resize((int(windowSize[0] / 2), int(windowSize[1] / 2),))
+        img_Similar = ImageTk.PhotoImage(img_Similar)
         # endregion
 
-        # adding images to canvas
-        tk_canvas.create_image(0, 0, anchor=NW, image=img_1)
-        tk_canvas.create_image((int(windowSize[0] / 2)), 0, anchor=NW, image=img_2)
+        # adding images to grid
+        imageLabelOriginalImage = Label(image=imgOriginal)
+        imageLabelOriginalImage.grid(row=1, column=0)
+        imageLabelSimilarImage = Label(image=img_Similar)
+        imageLabelSimilarImage.grid(row=1, column=1)
 
         myLabel = Label(tk_root, text="Original File")
         myLabel.grid(row=2, column=0)
@@ -45,11 +47,14 @@ class GUI:
 
         # folderpath input
         def browse_file():
-            new_path = fd.askdirectory()
-            print(new_path)
+            self.folderpath = fd.askdirectory()
+            print(self.folderpath)
 
         # Creating Button to search for a folderpath
         browseButton = Button(master=tk_root, text='Browse Folderpath', command=browse_file)
         browseButton.grid(row=3, column=0, columnspan=2)
+
+        label_toFolderPath = Label(tk_root, text="Folderpath is set to: Nothing yet")
+        label_toFolderPath.grid(row=4, column=0, columnspan=2)
 
         mainloop()
