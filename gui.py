@@ -18,11 +18,11 @@ class GUI:
         #     print("Start")
         #     myLabels.append(Label(tk_root, text="BLAAAAAAA"))
         #     myLabels[i].pack()
-        myLabel = Label(tk_root, text="Original File")
-        myLabel.grid(row=0, column=0)
+        myLabel = Label(tk_root, text="Image Preview")
+        myLabel.grid(row=0, column=0, columnspan=2)
 
         tk_canvas = Canvas(tk_root, width=windowSize[0], height=windowSize[1] / 2)  # creating canvas
-        tk_canvas.grid(row=1, column=0)  # marrying canvas and root
+        tk_canvas.grid(row=1, column=0, columnspan=2)  # marrying canvas and root
 
         # region ImageLoading
         # loading images, resizing them
@@ -38,13 +38,18 @@ class GUI:
         tk_canvas.create_image(0, 0, anchor=NW, image=img_1)
         tk_canvas.create_image((int(windowSize[0] / 2)), 0, anchor=NW, image=img_2)
 
+        myLabel = Label(tk_root, text="Original File")
+        myLabel.grid(row=2, column=0)
+        myLabel = Label(tk_root, text="Similar File")
+        myLabel.grid(row=2, column=1)
+
         # folderpath input
         def browse_file():
             new_path = fd.askdirectory()
             print(new_path)
 
         # Creating Button to search for a folderpath
-        browseButton = Button(master=tk_root, text='Browse', width=6, command=browse_file)
-        browseButton.grid(row=2, column=0)
+        browseButton = Button(master=tk_root, text='Browse Folderpath', command=browse_file)
+        browseButton.grid(row=3, column=0, columnspan=2)
 
         mainloop()
