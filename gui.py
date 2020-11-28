@@ -48,7 +48,8 @@ class GUI:
         # folderpath input
         def browse_file():
             self.folderpath = fd.askdirectory()
-            print(self.folderpath)
+            label_toFolderPath.configure(text="Folderpath is set to: " + self.folderpath)
+            # print(self.folderpath)
 
         # Creating Button to search for a folderpath
         browseButton = Button(master=tk_root, text='Browse Folderpath', command=browse_file)
