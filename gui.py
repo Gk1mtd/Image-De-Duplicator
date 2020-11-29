@@ -4,8 +4,6 @@ from PIL import ImageTk, Image
 
 
 class GUI:
-    folderpath = ""
-
     def quit(self, event):
         sys.exit("ShortCut Quit")
 
@@ -14,6 +12,9 @@ class GUI:
         tk_root.geometry((str(windowSize[0]) + "x" + str(windowSize[1])))
         tk_root.title(windowTitle)
         tk_root.bind("<Control-q>", self.quit)
+
+        folderpathVariable = StringVar()
+        folderpathVariable.set("Folderpath is set to: Nothing yet")
 
         # myLabels = []
         # for i in range(5):
@@ -47,15 +48,15 @@ class GUI:
 
         # folderpath input
         def browse_file():
-            self.folderpath = fd.askdirectory()
-            label_toFolderPath.configure(text="Folderpath is set to: " + self.folderpath)
+            folderpath = fd.askdirectory()
+            folderpathVariable.set("Folderpath is set to: " + folderpath)
             # print(self.folderpath)
 
         # Creating Button to search for a folderpath
         browseButton = Button(master=tk_root, text='Browse Folderpath', command=browse_file)
         browseButton.grid(row=3, column=0, columnspan=2)
 
-        label_toFolderPath = Label(tk_root, text="Folderpath is set to: Nothing yet")
+        label_toFolderPath = Label(tk_root, textvariable=folderpathVariable)
         label_toFolderPath.grid(row=4, column=0, columnspan=2)
 
         mainloop()
