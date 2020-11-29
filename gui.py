@@ -3,27 +3,24 @@ from tkinter import filedialog as fd
 from PIL import ImageTk, Image
 
 
+def quitProgram(event):
+    sys.exit("ShortCut Quit: Eventmessage: " + str(event))
+
+
 class GUI:
-    def quit(self, event):
-        sys.exit("ShortCut Quit")
 
     def __init__(self, windowSize, windowTitle):
         tk_root = Tk()  # creating tkinter root
         tk_root.geometry((str(windowSize[0]) + "x" + str(windowSize[1])))
         tk_root.title(windowTitle)
-        tk_root.bind("<Control-q>", self.quit)
+        # binding shortcut ctrl+q to function quitProgram()
+        tk_root.bind("<Control-q>", quitProgram)
 
         folderpathVariable = StringVar()
         folderpathVariable.set("Folderpath is set to: Nothing yet")
 
-        # myLabels = []
-        # for i in range(5):
-        #     print("Start")
-        #     myLabels.append(Label(tk_root, text="BLAAAAAAA"))
-        #     myLabels[i].pack()
         myLabel = Label(tk_root, text="Image Preview")
         myLabel.grid(row=0, column=0, columnspan=2)
-
 
         # region ImageLoading
         # loading images, resizing them
