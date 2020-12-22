@@ -14,7 +14,7 @@ class ImageSimilarityCalculator:
         imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
         imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
         (score, diff) = structural_similarity(imageA, imageB, multichannel=True, full=True)
-        if score >= treshhold:
-            print("SSIM after reducing filesize: " + str(score))
-            print("ImageA was: " + str(pathToFileA) + " | ImageB was: " + str(pathToFileB))
-            return score
+        # if score >= treshhold:
+        #     print("SSIM after reducing filesize: " + str(score))
+        #     print("ImageA was: " + str(pathToFileA) + " | ImageB was: " + str(pathToFileB))
+        return [score, pathToFileA, pathToFileB]

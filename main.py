@@ -1,6 +1,8 @@
 import datetime
+from time import sleep
 from tkinter import *
 from tkinter import filedialog as fd
+import cv2
 from PIL import ImageTk, Image
 from image_similarity_calculator import ImageSimilarityCalculator
 import glob
@@ -8,7 +10,6 @@ import glob
 # Variables and Objects
 pathToWorkingFolder = ""
 global imageFilesInWorkingFolder
-imageFilesInWorkingFolder = ""
 obj_imageSimilarityCalculator = ImageSimilarityCalculator()
 
 
@@ -24,20 +25,26 @@ def listOfAllImageFiles():
 
 
 def compare2Images(imageA, imageB, treshhold):  # ImageA/B should be for now a path as string to the file
-    # start = datetime.datetime.now()
-    obj_imageSimilarityCalculator.ssim_calculation(imageA, imageB, treshhold)
-    # finish = datetime.datetime.now()
-    # print(finish - start)
+    score, pathToA, pathToB = obj_imageSimilarityCalculator.ssim_calculation(imageA, imageB, treshhold)
+    return [score, pathToA, pathToB]
 
 
 def startSearchForDupes():
     listOfAllImageFiles()
+    threshhold = 0.7
+    # start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
-        for j in range(i, len(imageFilesInWorkingFolder)):
+        print("### File batch #: " + str(i+1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
+        for j in range(0, len(imageFilesInWorkingFolder)):
             # print("Compare File: " + imageFilesInWorkingFolder[i] + " with: " + imageFilesInWorkingFolder[j])
             if imageFilesInWorkingFolder[i] != imageFilesInWorkingFolder[j]:
                 # print("Compare File: " + imageFilesInWorkingFolder[i] + " with: " + imageFilesInWorkingFolder[j])
-                compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], 0.7)
+                score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], threshhold)
+                if score >= threshhold:
+                    print("Image: " + pathToA + " and " + pathToB + " are very similar.")
+    # finish = datetime.datetime.now()
+    # print(finish - start)
+
 
 # GUI
 def setPathToWorkingDirectory():
@@ -46,6 +53,7 @@ def setPathToWorkingDirectory():
     print("Set Working Directory to: " + pathToWorkingFolder)
 
 
+# Quit Program with shortcut
 def quitProgram(event):
     sys.exit("ShortCut Quit: Eventmessage: " + str(event))
 
@@ -53,10 +61,28 @@ def quitProgram(event):
 tk_root = Tk()
 tk_root.bind("<Control-q>", quitProgram)  # binding shortcut ctrl+q to function quitProgram()
 tk_root.title("DeDup 0.1")
+def test():
+    print("TEST")
+    global imageA
+    imageA = ImageTk.PhotoImage(Image.open("modified.png").resize((150, 150)))
+    guiImageA = Label(tk_root, image=imageA)
+    guiImageA.grid(row=2, column=0)
+# Buttons
 buttonToSetPathToWorkingFolder = Button(tk_root, text="Set Path To Working Directory",
                                         command=setPathToWorkingDirectory)
 buttonToSetPathToWorkingFolder.grid(row=0, column=0)
 buttonStartSearchForDupes = Button(tk_root, text="Start Search For Dupes", command=startSearchForDupes)
 buttonStartSearchForDupes.grid(row=1, column=0)
+testButton = Button(tk_root, text="Test Me", command=test)
+testButton.grid(row=3, column=0)
+
+# Images
+imageA = ImageTk.PhotoImage(Image.open("test2.png").resize((150, 150)))
+guiImageA = Label(tk_root, image=imageA)
+guiImageA.grid(row=2, column=0)
+
+imageB = ImageTk.PhotoImage(Image.open("test2.png").resize((150, 150)))
+guiImageB = Label(tk_root, image=imageB)
+guiImageB.grid(row=2, column=1)
 
 mainloop()
