@@ -7,30 +7,37 @@ import glob
 
 # Variables and Objects
 pathToWorkingFolder = ""
+global imageFilesInWorkingFolder
 imageFilesInWorkingFolder = ""
 obj_imageSimilarityCalculator = ImageSimilarityCalculator()
 
 
 def listOfAllImageFiles():
     # path = 'c:\\projects\\hc2\\'
+    global imageFilesInWorkingFolder
     imageFilesInWorkingFolder = ""
     imageFilesInWorkingFolder = [f for f in glob.glob(pathToWorkingFolder + "**/*.png", recursive=True)]
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "**/*.jpg", recursive=True)]
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "**/*.jpeg", recursive=True)]
-    for f in imageFilesInWorkingFolder:
-        print(f)
+    # for f in imageFilesInWorkingFolder:
+    #     print(f)
 
 
-def compare2Images(imageA, imageB):  # ImageA/B should be for now a path as string to the file
+def compare2Images(imageA, imageB, treshhold):  # ImageA/B should be for now a path as string to the file
     # start = datetime.datetime.now()
-    obj_imageSimilarityCalculator.ssim_calculation(imageA, imageB)
+    obj_imageSimilarityCalculator.ssim_calculation(imageA, imageB, treshhold)
     # finish = datetime.datetime.now()
     # print(finish - start)
 
 
 def startSearchForDupes():
     listOfAllImageFiles()
-
+    for i in range(0, len(imageFilesInWorkingFolder)):
+        for j in range(i, len(imageFilesInWorkingFolder)):
+            # print("Compare File: " + imageFilesInWorkingFolder[i] + " with: " + imageFilesInWorkingFolder[j])
+            if imageFilesInWorkingFolder[i] != imageFilesInWorkingFolder[j]:
+                # print("Compare File: " + imageFilesInWorkingFolder[i] + " with: " + imageFilesInWorkingFolder[j])
+                compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], 0.7)
 
 # GUI
 def setPathToWorkingDirectory():
