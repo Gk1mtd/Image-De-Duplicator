@@ -38,8 +38,8 @@ def startSearchForDupes():
     for i in range(0, len(imageFilesInWorkingFolder)):
         print("### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
         for j in range(0, len(imageFilesInWorkingFolder)):
-            progressBarj['value'] = ((100 * (j + 1)) / len(imageFilesInWorkingFolder))
-            tk_root.update_idletasks()
+            progressBarj['value'] = ((100 * (j + 1)) / len(imageFilesInWorkingFolder)) # shows single file progress
+            tk_root.update_idletasks() # updates GUI
             # print("Compare File: " + imageFilesInWorkingFolder[i] + " with: " + imageFilesInWorkingFolder[j])
             if imageFilesInWorkingFolder[i] != imageFilesInWorkingFolder[j]:
                 # print("Compare File: " + imageFilesInWorkingFolder[i] + " with: " + imageFilesInWorkingFolder[j])
@@ -47,9 +47,8 @@ def startSearchForDupes():
                                                          threshhold)
                 if score >= threshhold:
                     print("Image: " + pathToA + " and " + pathToB + " are very similar.")
-
-            progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))
-            tk_root.update_idletasks()
+            progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder)) # shows total Progress
+            tk_root.update_idletasks() # updates GUI
     # finish = datetime.datetime.now()
     # print(finish - start)
 
