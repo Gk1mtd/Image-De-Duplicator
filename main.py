@@ -2,6 +2,8 @@ import datetime
 from time import sleep
 from tkinter import *
 from tkinter import filedialog as fd
+from tkinter.ttk import Progressbar
+
 import cv2
 from PIL import ImageTk, Image
 from image_similarity_calculator import ImageSimilarityCalculator
@@ -84,5 +86,9 @@ guiImageA.grid(row=2, column=0)
 imageB = ImageTk.PhotoImage(Image.open("test2.png").resize((150, 150)))
 guiImageB = Label(tk_root, image=imageB)
 guiImageB.grid(row=2, column=1)
+
+progressBar = Progressbar(tk_root, orient="horizontal", length=300)
+progressBar.grid(row=4, column=0, columnspan=2)
+
 
 mainloop()
