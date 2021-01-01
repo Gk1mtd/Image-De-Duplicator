@@ -36,14 +36,20 @@ def startSearchForDupes():
     threshhold = 0.7
     # start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
-        print("### File batch #: " + str(i+1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
+        print("### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
         for j in range(0, len(imageFilesInWorkingFolder)):
+            progressBarj['value'] = ((100 * (j + 1)) / len(imageFilesInWorkingFolder))
+            tk_root.update_idletasks()
             # print("Compare File: " + imageFilesInWorkingFolder[i] + " with: " + imageFilesInWorkingFolder[j])
             if imageFilesInWorkingFolder[i] != imageFilesInWorkingFolder[j]:
                 # print("Compare File: " + imageFilesInWorkingFolder[i] + " with: " + imageFilesInWorkingFolder[j])
-                score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], threshhold)
+                score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j],
+                                                         threshhold)
                 if score >= threshhold:
                     print("Image: " + pathToA + " and " + pathToB + " are very similar.")
+
+            progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))
+            tk_root.update_idletasks()
     # finish = datetime.datetime.now()
     # print(finish - start)
 
@@ -63,12 +69,16 @@ def quitProgram(event):
 tk_root = Tk()
 tk_root.bind("<Control-q>", quitProgram)  # binding shortcut ctrl+q to function quitProgram()
 tk_root.title("DeDup 0.1")
+
+
 def test():
     print("TEST")
     global imageA
     imageA = ImageTk.PhotoImage(Image.open("modified.png").resize((150, 150)))
     guiImageA = Label(tk_root, image=imageA)
     guiImageA.grid(row=2, column=0)
+
+
 # Buttons
 buttonToSetPathToWorkingFolder = Button(tk_root, text="Set Path To Working Directory",
                                         command=setPathToWorkingDirectory)
@@ -87,8 +97,9 @@ imageB = ImageTk.PhotoImage(Image.open("test2.png").resize((150, 150)))
 guiImageB = Label(tk_root, image=imageB)
 guiImageB.grid(row=2, column=1)
 
-progressBar = Progressbar(tk_root, orient="horizontal", length=300)
-progressBar.grid(row=4, column=0, columnspan=2)
-
+progressBari = Progressbar(tk_root, orient="horizontal", length=300)
+progressBari.grid(row=4, column=0, columnspan=2)
+progressBarj = Progressbar(tk_root, orient="horizontal", length=300)
+progressBarj.grid(row=5, column=0, columnspan=2)
 
 mainloop()
