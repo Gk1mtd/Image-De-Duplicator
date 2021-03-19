@@ -1,9 +1,12 @@
-import datetime
-from time import sleep
+# Eigentlich sollte ich die Score Daten in einer Datenbank speichern SQLite z.B.
+# damit könnte zu jedem Bild-zu-Bild vergleich der Score gespeichert werden und damit Rechenzeit optimiert
+# da die selben Bilder nicht n^n mal verglichen werden müssen
+# import datetime
+# from time import sleep
 from tkinter import *
 from tkinter import filedialog as fd
 from tkinter.ttk import Progressbar
-import cv2
+# import cv2
 from PIL import ImageTk, Image
 from image_similarity_calculator import ImageSimilarityCalculator
 import glob
@@ -18,7 +21,7 @@ obj_imageSimilarityCalculator = ImageSimilarityCalculator()
 def listOfAllImageFiles():
     # path = 'c:\\projects\\hc2\\'
     global imageFilesInWorkingFolder
-    imageFilesInWorkingFolder = "" # CLean Up of the list
+    imageFilesInWorkingFolder = ""  # CLean Up of the list
     imageFilesInWorkingFolder = [f for f in glob.glob(pathToWorkingFolder + "**/*.png", recursive=True)]
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "**/*.jpg", recursive=True)]
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "**/*.jpeg", recursive=True)]
@@ -35,21 +38,22 @@ def compare2Images(imageA, imageB, treshhold):  # ImageA/B are paths, as string,
 def startSearchForDupes():
     listOfAllImageFiles()
     threshhold = 0.7
+    score_over_threshold_counter = 0
     # start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
         print("### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
-        for j in range(0, len(imageFilesInWorkingFolder)):
-            progressBarj['value'] = ((100 * (j + 1)) / len(imageFilesInWorkingFolder)) # shows single file progress
-            tk_root.update_idletasks() # updates GUI
-            # print("Compare File: " + imageFilesInWorkingFolder[i] + " with: " + imageFilesInWorkingFolder[j])
+        for j in range(0+i, len(imageFilesInWorkingFolder)):
+            progressBarj['value'] = ((100 * (j + 1)) / len(imageFilesInWorkingFolder))  # shows single file progress
+            tk_root.update_idletasks()  # updates GUI
             if imageFilesInWorkingFolder[i] != imageFilesInWorkingFolder[j]:
-                # print("Compare File: " + imageFilesInWorkingFolder[i] + " with: " + imageFilesInWorkingFolder[j])
                 score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j],
                                                          threshhold)
                 if score >= threshhold:
                     print("Image: " + pathToA + " and " + pathToB + " are very similar.")
-            progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder)) # shows total Progress
-            tk_root.update_idletasks() # updates GUI
+                    score_over_threshold_counter += 1
+            progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
+            tk_root.update_idletasks()  # updates GUI
+    print(score_over_threshold_counter)
     # finish = datetime.datetime.now()
     # print(finish - start)
 
@@ -57,7 +61,7 @@ def startSearchForDupes():
 # GUI
 def setPathToWorkingDirectory():
     global pathToWorkingFolder
-    pathToWorkingFolder = fd.askdirectory()
+    pathToWorkingFolder = fd.askdirectory() + "/"
     print("Set Working Directory to: " + pathToWorkingFolder)
 
 
@@ -65,12 +69,14 @@ def setPathToWorkingDirectory():
 def quitProgram(event):
     sys.exit("ShortCut Quit: Eventmessage: " + str(event))
 
+
 def test():
     print("TEST")
     global imageA
     imageA = ImageTk.PhotoImage(Image.open("modified.png").resize((150, 150)))
     guiImageA = Label(tk_root, image=imageA)
     guiImageA.grid(row=2, column=0)
+
 
 tk_root = Tk()
 tk_root.bind("<Control-q>", quitProgram)  # binding shortcut ctrl+q to function quitProgram()
