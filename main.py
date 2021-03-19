@@ -3,7 +3,6 @@ from time import sleep
 from tkinter import *
 from tkinter import filedialog as fd
 from tkinter.ttk import Progressbar
-
 import cv2
 from PIL import ImageTk, Image
 from image_similarity_calculator import ImageSimilarityCalculator
@@ -15,10 +14,11 @@ global imageFilesInWorkingFolder
 obj_imageSimilarityCalculator = ImageSimilarityCalculator()
 
 
+# Searches through the designated work path and adds all files with specific post-fix to a list
 def listOfAllImageFiles():
     # path = 'c:\\projects\\hc2\\'
     global imageFilesInWorkingFolder
-    imageFilesInWorkingFolder = ""
+    imageFilesInWorkingFolder = "" # CLean Up of the list
     imageFilesInWorkingFolder = [f for f in glob.glob(pathToWorkingFolder + "**/*.png", recursive=True)]
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "**/*.jpg", recursive=True)]
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "**/*.jpeg", recursive=True)]
@@ -26,7 +26,8 @@ def listOfAllImageFiles():
     #     print(f)
 
 
-def compare2Images(imageA, imageB, treshhold):  # ImageA/B should be for now a path as string to the file
+# uses the image-similarity_calculator to check two images against each other, outputs teh score and the paths to the files
+def compare2Images(imageA, imageB, treshhold):  # ImageA/B are paths, as string, to the specified files
     score, pathToA, pathToB = obj_imageSimilarityCalculator.ssim_calculation(imageA, imageB, treshhold)
     return [score, pathToA, pathToB]
 
@@ -64,12 +65,6 @@ def setPathToWorkingDirectory():
 def quitProgram(event):
     sys.exit("ShortCut Quit: Eventmessage: " + str(event))
 
-
-tk_root = Tk()
-tk_root.bind("<Control-q>", quitProgram)  # binding shortcut ctrl+q to function quitProgram()
-tk_root.title("DeDup 0.1")
-
-
 def test():
     print("TEST")
     global imageA
@@ -77,6 +72,9 @@ def test():
     guiImageA = Label(tk_root, image=imageA)
     guiImageA.grid(row=2, column=0)
 
+tk_root = Tk()
+tk_root.bind("<Control-q>", quitProgram)  # binding shortcut ctrl+q to function quitProgram()
+tk_root.title("DeDup 0.1")
 
 # Buttons
 buttonToSetPathToWorkingFolder = Button(tk_root, text="Set Path To Working Directory",
