@@ -22,7 +22,7 @@ def listOfAllImageFiles():
     # path = 'c:\\projects\\hc2\\'
     global imageFilesInWorkingFolder
     imageFilesInWorkingFolder = ""  # CLean Up of the list
-    imageFilesInWorkingFolder = [f for f in glob.glob(pathToWorkingFolder + "**/*.png", recursive=True)]
+    imageFilesInWorkingFolder = [f for f in glob.glob(pathToWorkingFolder + "**/*.png", recursive=True)] # t
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "**/*.jpg", recursive=True)]
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "**/*.jpeg", recursive=True)]
     # for f in imageFilesInWorkingFolder:
