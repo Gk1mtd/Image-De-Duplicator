@@ -90,11 +90,11 @@ def startSearchForDupes():
     for i in range(0, len(imageFilesInWorkingFolder)):
         print("\n### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
         for j in range(0 + i + 1, len(imageFilesInWorkingFolder)):
-            if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
-                createNewKeyInDict(imageFilesInWorkingFolder[i])
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j]):
                 score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], threshold)
                 if score >= threshold:
+                    if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
+                        createNewKeyInDict(imageFilesInWorkingFolder[i])
                     addValueToDictKey(pathToA, pathToB)
                     score_over_threshold_counter +=1
             progressBarj['value'] = ((100 * (j + 1)) / len(imageFilesInWorkingFolder))  # shows single file progress
