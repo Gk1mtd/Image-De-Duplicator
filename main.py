@@ -10,6 +10,7 @@ from tkinter.ttk import Progressbar
 from PIL import ImageTk, Image
 from image_similarity_calculator import ImageSimilarityCalculator
 import glob
+import pprint
 import json
 
 # Variables and Objects
@@ -54,8 +55,14 @@ def clear_dict():
 def add_Value_to_Dict(image_A, similar_file_B):
     global image_score_dict
     image_score_dict[image_A].append(similar_file_B)
-    print("Added a new Value for Key: " + str(image_A) + "Value: " + str(similar_file_B))
+    #print("Added a new Value for Key: " + str(image_A) + " Value: " + str(similar_file_B))
+    #pprint.pprint(image_score_dict)
 
+
+def dump_to_JSON():
+    global image_score_dict
+    with open('data.json', 'w') as outfile:
+        json.dump(image_score_dict, outfile)
 
 def startSearchForDupes():
     listOfAllImageFiles()
@@ -63,20 +70,23 @@ def startSearchForDupes():
     score_over_threshold_counter = 0
     # start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
-        print("### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
-        for j in range(0 + i, len(imageFilesInWorkingFolder)):
+        print("\n### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
+        pathToAFlag = False
+        for j in range(0 + i + 1, len(imageFilesInWorkingFolder)):
             progressBarj['value'] = ((100 * (j + 1)) / len(imageFilesInWorkingFolder))  # shows single file progress
             tk_root.update_idletasks()  # updates GUI
-            if imageFilesInWorkingFolder[i] != imageFilesInWorkingFolder[j]:
-                score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j],
-                                                         threshhold)
-                if score >= threshhold:
-                    print("Image: " + pathToA + " and " + pathToB + " are very similar.")
-                    score_over_threshold_counter += 1
+            score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], threshhold)
+            if score >= threshhold:
+                #print("Image: " + pathToA + " and " + pathToB + " are very similar.")
+                score_over_threshold_counter += 1
+                if pathToAFlag == False: # only creates a new Key in the Dict once per image, so it will not be erased
                     create_new_key_in_dict(pathToA)
+                    pathToAFlag = True
+                add_Value_to_Dict(pathToA, pathToB)
             progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
             tk_root.update_idletasks()  # updates GUI
-    print(score_over_threshold_counter)
+    print("Found " + str(score_over_threshold_counter) + " similar images.")
+    dump_to_JSON()
     # finish = datetime.datetime.now()
     # print(finish - start)
 
