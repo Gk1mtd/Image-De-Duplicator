@@ -10,10 +10,12 @@ from tkinter.ttk import Progressbar
 from PIL import ImageTk, Image
 from image_similarity_calculator import ImageSimilarityCalculator
 import glob
+import json
 
 # Variables and Objects
 pathToWorkingFolder = ""
 global imageFilesInWorkingFolder
+image_score_dict = {}
 obj_imageSimilarityCalculator = ImageSimilarityCalculator()
 
 
@@ -35,6 +37,26 @@ def compare2Images(imageA, imageB, treshhold):  # ImageA/B are paths, as string,
     return [score, pathToA, pathToB]
 
 
+# adds the path of imageA to the dictionary. imageA shall be the path and therefore an unique ID. this method
+# is needed to access the "key" imageA and append the paths of similar images
+def create_new_key_in_dict(image_A):
+    global image_score_dict
+    image_score_dict[image_A] = []
+
+
+# resets the dict to nothing
+def clear_dict():
+    global image_score_dict
+    image_score_dict = {}
+
+
+# appends a value to the key of the dictionary
+def add_Value_to_Dict(image_A, similar_file_B):
+    global image_score_dict
+    image_score_dict[image_A].append(similar_file_B)
+    print("Added a new Value for Key: " + str(image_A) + "Value: " + str(similar_file_B))
+
+
 def startSearchForDupes():
     listOfAllImageFiles()
     threshhold = 0.7
@@ -42,7 +64,7 @@ def startSearchForDupes():
     # start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
         print("### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
-        for j in range(0+i, len(imageFilesInWorkingFolder)):
+        for j in range(0 + i, len(imageFilesInWorkingFolder)):
             progressBarj['value'] = ((100 * (j + 1)) / len(imageFilesInWorkingFolder))  # shows single file progress
             tk_root.update_idletasks()  # updates GUI
             if imageFilesInWorkingFolder[i] != imageFilesInWorkingFolder[j]:
@@ -51,6 +73,7 @@ def startSearchForDupes():
                 if score >= threshhold:
                     print("Image: " + pathToA + " and " + pathToB + " are very similar.")
                     score_over_threshold_counter += 1
+                    create_new_key_in_dict(pathToA)
             progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
             tk_root.update_idletasks()  # updates GUI
     print(score_over_threshold_counter)
