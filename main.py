@@ -40,26 +40,29 @@ def compare2Images(imageA, imageB, treshhold):  # ImageA/B are paths, as string,
 
 # adds the path of imageA to the dictionary. imageA shall be the path and therefore an unique ID. this method
 # is needed to access the "key" imageA and append the paths of similar images
-def create_new_key_in_dict(image_A):
+def createNewKeyInDict(image_A):
     global image_score_dict
     image_score_dict[image_A] = []
 
 
 # resets the dict to nothing
-def clear_dict():
+def clearDict():
     global image_score_dict
     image_score_dict = {}
 
 
 # appends a value to the key of the dictionary
-def add_Value_to_Dict(image_A, similar_file_B):
+def addValueToDictKey(image_A, similar_file_B):
     global image_score_dict
     image_score_dict[image_A].append(similar_file_B)
     #print("Added a new Value for Key: " + str(image_A) + " Value: " + str(similar_file_B))
     #pprint.pprint(image_score_dict)
 
 
-def dump_to_JSON():
+def checkDictForExistingKeys():
+    pass
+
+def dumpToJSON():
     global image_score_dict
     with open('data.json', 'w') as outfile:
         json.dump(image_score_dict, outfile)
@@ -75,18 +78,21 @@ def startSearchForDupes():
         for j in range(0 + i + 1, len(imageFilesInWorkingFolder)):
             progressBarj['value'] = ((100 * (j + 1)) / len(imageFilesInWorkingFolder))  # shows single file progress
             tk_root.update_idletasks()  # updates GUI
+
             score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], threshhold)
             if score >= threshhold:
-                #print("Image: " + pathToA + " and " + pathToB + " are very similar.")
                 score_over_threshold_counter += 1
                 if pathToAFlag == False: # only creates a new Key in the Dict once per image, so it will not be erased
-                    create_new_key_in_dict(pathToA)
+                    createNewKeyInDict(pathToA)
                     pathToAFlag = True
-                add_Value_to_Dict(pathToA, pathToB)
-            progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
-            tk_root.update_idletasks()  # updates GUI
+                addValueToDictKey(pathToA, pathToB)
+
+        progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
+        tk_root.update_idletasks()  # updates GUI
+
     print("Found " + str(score_over_threshold_counter) + " similar images.")
-    dump_to_JSON()
+    dumpToJSON()
+    pprint.pprint(image_score_dict)
     # finish = datetime.datetime.now()
     # print(finish - start)
 
