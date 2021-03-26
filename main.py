@@ -91,16 +91,12 @@ def startSearchForDupes():
         print("\n### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
         for j in range(0 + i + 1, len(imageFilesInWorkingFolder)):
             if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
-                print(str(imageFilesInWorkingFolder[i]) + " not a KEY")
                 createNewKeyInDict(imageFilesInWorkingFolder[i])
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j]):
-                #print(str(imageFilesInWorkingFolder[j]) + " not a VALUE")
                 score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], threshold)
                 if score >= threshold:
                     addValueToDictKey(pathToA, pathToB)
-            else:
-                print(str(imageFilesInWorkingFolder[j]) + " IS a VALUE")
-
+                    score_over_threshold_counter +=1
             progressBarj['value'] = ((100 * (j + 1)) / len(imageFilesInWorkingFolder))  # shows single file progress
             tk_root.update_idletasks()  # updates GUI
         progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
