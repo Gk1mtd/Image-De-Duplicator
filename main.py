@@ -55,44 +55,59 @@ def clearDict():
 def addValueToDictKey(image_A, similar_file_B):
     global image_score_dict
     image_score_dict[image_A].append(similar_file_B)
-    #print("Added a new Value for Key: " + str(image_A) + " Value: " + str(similar_file_B))
-    #pprint.pprint(image_score_dict)
+    # print("Added a new Value for Key: " + str(image_A) + " Value: " + str(similar_file_B))
+    # pprint.pprint(image_score_dict)
 
 
-def checkDictForExistingKeys():
-    pass
+def checkDictForExistingKeys(key):
+    global image_score_dict
+    if key in image_score_dict:
+        return True
+    else:
+        return False
+
+
+def checkDictForExistingValues(value):
+    global image_score_dict
+    for i in image_score_dict.values():
+        if value in i:
+            return True
+        else:
+            return False
+
 
 def dumpToJSON():
     global image_score_dict
     with open('data.json', 'w') as outfile:
         json.dump(image_score_dict, outfile)
 
+
 def startSearchForDupes():
     listOfAllImageFiles()
-    threshhold = 0.7
+    threshold = 0.7
     score_over_threshold_counter = 0
     # start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
         print("\n### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
-        pathToAFlag = False
         for j in range(0 + i + 1, len(imageFilesInWorkingFolder)):
+            if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
+                print(str(imageFilesInWorkingFolder[i]) + " not a KEY")
+                createNewKeyInDict(imageFilesInWorkingFolder[i])
+            if not checkDictForExistingValues(imageFilesInWorkingFolder[j]):
+                #print(str(imageFilesInWorkingFolder[j]) + " not a VALUE")
+                score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], threshold)
+                if score >= threshold:
+                    addValueToDictKey(pathToA, pathToB)
+            else:
+                print(str(imageFilesInWorkingFolder[j]) + " IS a VALUE")
+
             progressBarj['value'] = ((100 * (j + 1)) / len(imageFilesInWorkingFolder))  # shows single file progress
             tk_root.update_idletasks()  # updates GUI
-
-            score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], threshhold)
-            if score >= threshhold:
-                score_over_threshold_counter += 1
-                if pathToAFlag == False: # only creates a new Key in the Dict once per image, so it will not be erased
-                    createNewKeyInDict(pathToA)
-                    pathToAFlag = True
-                addValueToDictKey(pathToA, pathToB)
-
         progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
         tk_root.update_idletasks()  # updates GUI
-
-    print("Found " + str(score_over_threshold_counter) + " similar images.")
     dumpToJSON()
     pprint.pprint(image_score_dict)
+    print("Found " + str(score_over_threshold_counter) + " similar images.")
     # finish = datetime.datetime.now()
     # print(finish - start)
 
