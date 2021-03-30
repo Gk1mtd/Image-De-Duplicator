@@ -101,7 +101,7 @@ def startSearchForDupes(threadname="bla"):
                     if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
                         createNewKeyInDict(imageFilesInWorkingFolder[i])
                     addValueToDictKey(pathToA, pathToB)
-            progressBarj['value'] = (100 * j) / len(imageFilesInWorkingFolder)  # shows single file progress
+            progressBarj['value'] = (100 * (j-i)) / (len(imageFilesInWorkingFolder)-i)  # shows single file progress
             tk_root.update_idletasks()  # updates GUI
         progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
         tk_root.update_idletasks()  # updates GUI
@@ -163,8 +163,9 @@ progressBari.grid(row=5, column=0, columnspan=2)
 progressBarj = Progressbar(tk_root, orient="horizontal", length=300)
 progressBarj.grid(row=6, column=0, columnspan=2)
 
-# Textfield
-thresholdTextfield = Text(tk_root, height="1", width="6")
+# Textfield/Entry
+thresholdTextfield = Entry(tk_root)
+thresholdTextfield.insert(0, "70")
 thresholdTextfield.grid(row=1, column=1)
 
 # Label
