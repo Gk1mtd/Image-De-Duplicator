@@ -91,6 +91,7 @@ def startThread():
 def startSearchForDupes(threadname="bla"):
     listOfAllImageFiles()
     threshold = float(thresholdTextfield.get())/100
+    similarImagesCounter = 0
     #start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
         #print("\n### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
@@ -100,13 +101,15 @@ def startSearchForDupes(threadname="bla"):
                 if score >= threshold:
                     if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
                         createNewKeyInDict(imageFilesInWorkingFolder[i])
+                        similarImagesCounter +=1
                     addValueToDictKey(pathToA, pathToB)
             progressBarj['value'] = (100 * (j-i)) / (len(imageFilesInWorkingFolder)-i)  # shows single file progress
             tk_root.update_idletasks()  # updates GUI
         progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
         tk_root.update_idletasks()  # updates GUI
     dumpToJSON()
-    pprint.pprint(image_score_dict)
+    labelSimilarImagesFound.config(text=str(similarImagesCounter))
+    #pprint.pprint(image_score_dict)
     #finish = datetime.datetime.now()
     #print(finish - start)
 
@@ -132,7 +135,7 @@ def test():
     keyList = list(image_score_dict.keys())
     imageA = ImageTk.PhotoImage(Image.open(keyList[1]).resize((150, 150)))
     guiImageA = Label(tk_root, image=imageA)
-    guiImageA.grid(row=2, column=0)
+    guiImageA.grid(row=5, column=0)
 
 # tk root
 tk_root = Tk()
@@ -144,24 +147,24 @@ buttonToSetPathToWorkingFolder = Button(tk_root, text="Set Path To Working Direc
                                         command=setPathToWorkingDirectory)
 buttonToSetPathToWorkingFolder.grid(row=0, column=0)
 buttonStartSearchForDupes = Button(tk_root, text="Start Search For Dupes", command=startThread)
-buttonStartSearchForDupes.grid(row=2, column=0, columnspan=2)
+buttonStartSearchForDupes.grid(row=2, column=0)
 testButton = Button(tk_root, text="Test Me", command=test)
-testButton.grid(row=4, column=0)
+testButton.grid(row=7, column=0)
 
 # Images
 imageA = ImageTk.PhotoImage(Image.open("test2.png").resize((150, 150)))
 guiImageA = Label(tk_root, image=imageA)
-guiImageA.grid(row=3, column=0)
+guiImageA.grid(row=5, column=0)
 
 imageB = ImageTk.PhotoImage(Image.open("test2.png").resize((150, 150)))
 guiImageB = Label(tk_root, image=imageB)
-guiImageB.grid(row=3, column=1)
+guiImageB.grid(row=5, column=1)
 
 # Progressbar
 progressBari = Progressbar(tk_root, orient="horizontal", length=300)
-progressBari.grid(row=5, column=0, columnspan=2)
+progressBari.grid(row=3, column=0, columnspan=2)
 progressBarj = Progressbar(tk_root, orient="horizontal", length=300)
-progressBarj.grid(row=6, column=0, columnspan=2)
+progressBarj.grid(row=4, column=0, columnspan=2)
 
 # Textfield/Entry
 thresholdTextfield = Entry(tk_root)
@@ -173,5 +176,7 @@ labelFolderPath = Label(tk_root, text="Current Working Directory")
 labelFolderPath.grid(row=0, column=1)
 labelThreshold = Label(tk_root, text="Similarity Threshold in % ->")
 labelThreshold.grid(row=1, column=0)
+labelSimilarImagesFound = Label(tk_root, text="No Similar Pictures Found")
+labelSimilarImagesFound.grid(row=2, column=1)
 
 mainloop()
