@@ -6,7 +6,7 @@ class ImageSimilarityCalculator:
     imageSize = 350
     imageSize = (imageSize, imageSize)
 
-    def ssim_calculation(self, pathToFileA, pathToFileB, treshhold):
+    def ssim_calculation(self, pathToFileA, pathToFileB):
         imageA = cv2.imread(str(pathToFileA))
         imageB = cv2.imread(str(pathToFileB))
         imageA = cv2.resize(imageA, self.imageSize)
