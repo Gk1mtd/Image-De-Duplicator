@@ -90,7 +90,7 @@ def startThread():
 
 def startSearchForDupes(threadname="bla"):
     listOfAllImageFiles()
-    threshold = 0.7
+    threshold = float(thresholdTextfield.get())/100
     #start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
         #print("\n### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
