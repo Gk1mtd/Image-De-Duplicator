@@ -116,6 +116,8 @@ def setPathToWorkingDirectory():
     global pathToWorkingFolder
     pathToWorkingFolder = fd.askdirectory() + "/"
     print("Set Working Directory to: " + pathToWorkingFolder)
+    global labelFolderPath
+    labelFolderPath.config(text=pathToWorkingFolder)
 
 
 # Quit Program with shortcut
