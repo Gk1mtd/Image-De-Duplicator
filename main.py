@@ -91,6 +91,7 @@ def startThread():
 def startSearchForDupes(threadname="bla"):
     progressBari['value'] = 0  # resets the progressbar
     progressBarj['value'] = 0  # resets the progressbar
+    clearDict()
     listOfAllImageFiles()
     threshold = float(thresholdTextfield.get())/100
     similarImagesCounter = 0
@@ -109,7 +110,7 @@ def startSearchForDupes(threadname="bla"):
                         similarImagesCounter +=1
                     addValueToDictKey(pathToA, pathToB)
             progressBarj['value'] = (100 * (j-i)) / (len(imageFilesInWorkingFolder)-i)  # shows single file progress
-            if j == len(imageFilesInWorkingFolder):
+            if j == len(imageFilesInWorkingFolder)-1:
                 progressBarj['value'] = 100  # fills the progressbar complete, so it wont look like it stuck
             tk_root.update_idletasks()  # updates GUI
         progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
