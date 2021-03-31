@@ -89,13 +89,18 @@ def startThread():
     _thread.start_new_thread(startSearchForDupes, ("test1",))
 
 def startSearchForDupes(threadname="bla"):
+    progressBari['value'] = 0  # resets the progressbar
+    progressBarj['value'] = 0  # resets the progressbar
     listOfAllImageFiles()
     threshold = float(thresholdTextfield.get())/100
     similarImagesCounter = 0
     #start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
         #print("\n### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
-        for j in range(0 + i + 1, len(imageFilesInWorkingFolder)):
+        setImageAInGUI(imageFilesInWorkingFolder[i])
+        for j in range(1 + i, len(imageFilesInWorkingFolder)):
+            setImageBInGUI(imageFilesInWorkingFolder[j])
+            labelSimilarImagesFound.config(text="at File: " + str(imageFilesInWorkingFolder[j]))
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j]):
                 score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j])
                 if score >= threshold:
@@ -104,11 +109,14 @@ def startSearchForDupes(threadname="bla"):
                         similarImagesCounter +=1
                     addValueToDictKey(pathToA, pathToB)
             progressBarj['value'] = (100 * (j-i)) / (len(imageFilesInWorkingFolder)-i)  # shows single file progress
+            if j == len(imageFilesInWorkingFolder):
+                progressBarj['value'] = 100  # fills the progressbar complete, so it wont look like it stuck
             tk_root.update_idletasks()  # updates GUI
         progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
         tk_root.update_idletasks()  # updates GUI
+        dumpToJSON()
     dumpToJSON()
-    labelSimilarImagesFound.config(text=str(similarImagesCounter))
+    labelSimilarImagesFound.config(text="Found: " + str(similarImagesCounter) + " Duplicates")
     #pprint.pprint(image_score_dict)
     #finish = datetime.datetime.now()
     #print(finish - start)
@@ -126,6 +134,20 @@ def setPathToWorkingDirectory():
 # Quit Program with shortcut
 def quitProgram(event):
     sys.exit("ShortCut Quit: Eventmessage: " + str(event))
+
+
+def setImageAInGUI(imageFromLoopA):
+    global imageA
+    imageA = ImageTk.PhotoImage(Image.open(imageFromLoopA).resize((150, 150)))
+    guiImageA = Label(tk_root, image=imageA)
+    guiImageA.grid(row=5, column=0)
+
+
+def setImageBInGUI(imageFromLoopB):
+    global imageB
+    imageB = ImageTk.PhotoImage(Image.open(imageFromLoopB).resize((150, 150)))
+    guiImageB = Label(tk_root, image=imageB)
+    guiImageB.grid(row=5, column=1)
 
 
 def test():
