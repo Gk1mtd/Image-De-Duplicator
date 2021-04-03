@@ -90,17 +90,25 @@ def startThread():
     _thread.start_new_thread(startSearchForDupes, ("test1",))
 
 def startSearchForDupes(threadname="bla"):
+    global breakFlag
+    breakFlag = False
+    buttonStartSearchForDupes.grid_forget() # hides Button
+    buttonStopSearch.grid(row=2, column=0)
     progressBari['value'] = 0  # resets the progressbar
     progressBarj['value'] = 0  # resets the progressbar
+    tk_root.update_idletasks()  # updates GUI
     clearDict()
     listOfAllImageFiles()
     threshold = float(thresholdTextfield.get())/100
     similarImagesCounter = 0
     #start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
-        #print("\n### File batch #: " + str(i + 1) + " of " + str(len(imageFilesInWorkingFolder)) + " is processed.")
+        if breakFlag:   # Escapes the search
+            break
         setImageAInGUI(imageFilesInWorkingFolder[i])
         for j in range(1 + i, len(imageFilesInWorkingFolder)):
+            if breakFlag:   # Escapes the search
+                break
             setImageBInGUI(imageFilesInWorkingFolder[j])
             labelSimilarImagesFound.config(text="at File: " + str(imageFilesInWorkingFolder[j]))
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j]):
@@ -119,6 +127,10 @@ def startSearchForDupes(threadname="bla"):
         dumpToJSON()
     dumpToJSON()
     labelSimilarImagesFound.config(text="Found: " + str(similarImagesCounter) + " Duplicates")
+    buttonStopSearch.grid_forget()
+    buttonStartSearchForDupes.grid(row=2, column=0) # shows the Search Button again
+
+
     #pprint.pprint(image_score_dict)
     #finish = datetime.datetime.now()
     #print(finish - start)
@@ -152,8 +164,12 @@ def setImageBInGUI(imageFromLoopB):
     guiImageB.grid(row=5, column=1)
 
 
+def stopSearch():
+    global breakFlag
+    breakFlag = True
+
+
 def test():
-    print("TEST")
     global imageA
     global image_score_dict
     keyList = list(image_score_dict.keys())
@@ -172,6 +188,7 @@ buttonToSetPathToWorkingFolder = Button(tk_root, text="Set Path To Working Direc
 buttonToSetPathToWorkingFolder.grid(row=0, column=0)
 buttonStartSearchForDupes = Button(tk_root, text="Start Search For Dupes", command=startThread)
 buttonStartSearchForDupes.grid(row=2, column=0)
+buttonStopSearch = Button(tk_root, text="Stop Search!", command=stopSearch)
 testButton = Button(tk_root, text="Test Me", command=test)
 testButton.grid(row=7, column=0)
 
