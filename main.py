@@ -92,11 +92,14 @@ def startThread():
 def startSearchForDupes(threadname="bla"):
     global breakFlag
     breakFlag = False
+
     buttonStartSearchForDupes.grid_forget() # hides Button
     buttonStopSearch.grid(row=2, column=0)
+
     progressBari['value'] = 0  # resets the progressbar
     progressBarj['value'] = 0  # resets the progressbar
     tk_root.update_idletasks()  # updates GUI
+
     clearDict()
     listOfAllImageFiles()
     threshold = float(thresholdTextfield.get())/100
@@ -116,7 +119,7 @@ def startSearchForDupes(threadname="bla"):
                 if score >= threshold:
                     if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
                         createNewKeyInDict(imageFilesInWorkingFolder[i])
-                        similarImagesCounter +=1
+                    similarImagesCounter +=1
                     addValueToDictKey(pathToA, pathToB)
             progressBarj['value'] = (100 * (j-i)) / (len(imageFilesInWorkingFolder)-i)  # shows single file progress
             if j == len(imageFilesInWorkingFolder)-1:
@@ -129,8 +132,6 @@ def startSearchForDupes(threadname="bla"):
     labelSimilarImagesFound.config(text="Found: " + str(similarImagesCounter) + " Duplicates")
     buttonStopSearch.grid_forget()
     buttonStartSearchForDupes.grid(row=2, column=0) # shows the Search Button again
-
-
     #pprint.pprint(image_score_dict)
     #finish = datetime.datetime.now()
     #print(finish - start)
