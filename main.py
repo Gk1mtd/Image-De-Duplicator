@@ -4,8 +4,8 @@
 # import datetime
 # from time import sleep
 import _thread
-import datetime
-import multiprocessing
+# import datetime
+# import multiprocessing
 from tkinter import *
 from tkinter import filedialog as fd
 from tkinter.ttk import Progressbar
@@ -13,7 +13,7 @@ from tkinter.ttk import Progressbar
 from PIL import ImageTk, Image
 from image_similarity_calculator import ImageSimilarityCalculator
 import glob
-import pprint
+# import pprint
 import json
 import sys
 
@@ -36,7 +36,8 @@ def listOfAllImageFiles():
     #     print(f)
 
 
-# uses the image-similarity_calculator to check two images against each other, outputs teh score and the paths to the files
+# uses the image-similarity_calculator to check two images against each other, outputs teh score and the paths to
+# the files
 def compare2Images(imageA, imageB):  # ImageA/B are paths, as string, to the specified files
     score, pathToA, pathToB = obj_imageSimilarityCalculator.ssim_calculation(imageA, imageB)
     return [score, pathToA, pathToB]
@@ -89,7 +90,10 @@ def dumpToJSON():
 def startThread():
     _thread.start_new_thread(startSearchForDupes, ("test1",))
 
-def startSearchForDupes(threadname="bla"):
+
+# Essentialy takes all the filenames in the specified folder and runs it through the imageComparisonAlogrithm.
+# It then fills a dictionary ith images and their duplicates
+def startSearchForDupes(threadname="Damn Thread!"): # Since i introduced Threads, now without it, the gui fucks up
     global breakFlag
     breakFlag = False
 
