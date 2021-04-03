@@ -15,6 +15,7 @@ from image_similarity_calculator import ImageSimilarityCalculator
 import glob
 import pprint
 import json
+import sys
 
 # Variables and Objects
 pathToWorkingFolder = ""
