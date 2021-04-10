@@ -142,7 +142,6 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
     # print(finish - start)
 
 
-# GUI
 def setPathToWorkingDirectory():
     global pathToWorkingFolder
     pathToWorkingFolder = fd.askdirectory() + "/"
@@ -184,10 +183,16 @@ def test():
     guiImageA.grid(row=5, column=0)
 
 
+# GUI
 # tk root
 tk_root = Tk()
 tk_root.bind("<Control-q>", quitProgram)  # binding shortcut ctrl+q to function quitProgram()
 tk_root.title("DeDup 0.1")
+# Gets both half the screen width/height and window width/height
+positionRight = int((tk_root.winfo_screenwidth() / 2) - tk_root.winfo_reqwidth())
+positionDown = int((tk_root.winfo_screenheight() / 2) - tk_root.winfo_reqheight())
+# Positions the window in the center of the page.
+tk_root.geometry("+{}+{}".format(positionRight, positionDown))
 
 # Buttons
 buttonToSetPathToWorkingFolder = Button(tk_root, text="Set Path To Working Directory",
