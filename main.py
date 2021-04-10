@@ -100,6 +100,7 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
     buttonStartSearchForDupes.grid_forget()  # hides Button
     buttonStopSearch.grid(row=2, column=0)
 
+    labelSimilarImagesFound.config(text="No Similar Pictures Found")
     progressBari['value'] = 0  # resets the progressbar
     progressBarj['value'] = 0  # resets the progressbar
     tk_root.update_idletasks()  # updates GUI
