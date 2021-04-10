@@ -93,11 +93,11 @@ def startThread():
 
 # Essentialy takes all the filenames in the specified folder and runs it through the imageComparisonAlogrithm.
 # It then fills a dictionary ith images and their duplicates
-def startSearchForDupes(threadname="Damn Thread!"): # Since i introduced Threads, now without it, the gui fucks up
+def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Threads, now without it, the gui fucks up
     global breakFlag
     breakFlag = False
 
-    buttonStartSearchForDupes.grid_forget() # hides Button
+    buttonStartSearchForDupes.grid_forget()  # hides Button
     buttonStopSearch.grid(row=2, column=0)
 
     progressBari['value'] = 0  # resets the progressbar
@@ -106,39 +106,40 @@ def startSearchForDupes(threadname="Damn Thread!"): # Since i introduced Threads
 
     clearDict()
     listOfAllImageFiles()
-    threshold = float(thresholdTextfield.get())/100
+    threshold = float(thresholdTextfield.get()) / 100
     similarImagesCounter = 0
-    #start = datetime.datetime.now()
+    # start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
-        if breakFlag:   # Escapes the search
+        if breakFlag:  # Escapes the search
             break
         setImageAInGUI(imageFilesInWorkingFolder[i])
         for j in range(1 + i, len(imageFilesInWorkingFolder)):
-            if breakFlag:   # Escapes the search
+            if breakFlag:  # Escapes the search
                 break
             setImageBInGUI(imageFilesInWorkingFolder[j])
-            labelSimilarImagesFound.config(text="at File: " + str(imageFilesInWorkingFolder[j]))
+            labelCurrentFile.config(text="at File: " + str(imageFilesInWorkingFolder[j]))
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j]):
                 score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j])
                 if score >= threshold:
                     if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
                         createNewKeyInDict(imageFilesInWorkingFolder[i])
-                    similarImagesCounter +=1
+                    similarImagesCounter += 1
+                    labelSimilarImagesFound.config(text="Found: " + str(similarImagesCounter) + " Duplicates")
+                    print("Found One: " + str(pathToB))
                     addValueToDictKey(pathToA, pathToB)
-            progressBarj['value'] = (100 * (j-i)) / (len(imageFilesInWorkingFolder)-i)  # shows single file progress
-            if j == len(imageFilesInWorkingFolder)-1:
+            progressBarj['value'] = (100 * (j - i)) / (len(imageFilesInWorkingFolder) - i)  # shows single file progress
+            if j == len(imageFilesInWorkingFolder) - 1:
                 progressBarj['value'] = 100  # fills the progressbar complete, so it wont look like it stuck
             tk_root.update_idletasks()  # updates GUI
         progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
         tk_root.update_idletasks()  # updates GUI
-        dumpToJSON()    # saves all ocurences of smilar images right away // dont loose your progress bro
+        dumpToJSON()  # saves all ocurences of smilar images right away // dont loose your progress bro
     dumpToJSON()
-    labelSimilarImagesFound.config(text="Found: " + str(similarImagesCounter) + " Duplicates")
     buttonStopSearch.grid_forget()
-    buttonStartSearchForDupes.grid(row=2, column=0) # shows the Search Button again
-    #pprint.pprint(image_score_dict)
-    #finish = datetime.datetime.now()
-    #print(finish - start)
+    buttonStartSearchForDupes.grid(row=2, column=0)  # shows the Search Button again
+    # pprint.pprint(image_score_dict)
+    # finish = datetime.datetime.now()
+    # print(finish - start)
 
 
 # GUI
@@ -159,14 +160,14 @@ def setImageAInGUI(imageFromLoopA):
     global imageA
     imageA = ImageTk.PhotoImage(Image.open(imageFromLoopA).resize((150, 150)))
     guiImageA = Label(tk_root, image=imageA)
-    guiImageA.grid(row=5, column=0)
+    guiImageA.grid(row=6, column=0)
 
 
 def setImageBInGUI(imageFromLoopB):
     global imageB
     imageB = ImageTk.PhotoImage(Image.open(imageFromLoopB).resize((150, 150)))
     guiImageB = Label(tk_root, image=imageB)
-    guiImageB.grid(row=5, column=1)
+    guiImageB.grid(row=6, column=1)
 
 
 def stopSearch():
@@ -181,6 +182,7 @@ def test():
     imageA = ImageTk.PhotoImage(Image.open(keyList[1]).resize((150, 150)))
     guiImageA = Label(tk_root, image=imageA)
     guiImageA.grid(row=5, column=0)
+
 
 # tk root
 tk_root = Tk()
@@ -213,6 +215,8 @@ labelFolderPath = Label(tk_root, text="Current Working Directory")
 labelFolderPath.grid(row=0, column=1)
 labelThreshold = Label(tk_root, text="Similarity Threshold in % ->")
 labelThreshold.grid(row=1, column=0)
+labelCurrentFile = Label(tk_root, text="Current File", wraplength=300)
+labelCurrentFile.grid(row=5, column=0, columnspan=2)
 labelSimilarImagesFound = Label(tk_root, text="No Similar Pictures Found")
 labelSimilarImagesFound.grid(row=2, column=1)
 
