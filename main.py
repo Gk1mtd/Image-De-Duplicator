@@ -131,7 +131,7 @@ def startSearchForDupes(threadname="Damn Thread!"): # Since i introduced Threads
             tk_root.update_idletasks()  # updates GUI
         progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
         tk_root.update_idletasks()  # updates GUI
-        dumpToJSON()
+        dumpToJSON()    # saves all ocurences of smilar images right away // dont loose your progress bro
     dumpToJSON()
     labelSimilarImagesFound.config(text="Found: " + str(similarImagesCounter) + " Duplicates")
     buttonStopSearch.grid_forget()
@@ -196,15 +196,6 @@ buttonStartSearchForDupes.grid(row=2, column=0)
 buttonStopSearch = Button(tk_root, text="Stop Search!", command=stopSearch)
 testButton = Button(tk_root, text="Test Me", command=test)
 testButton.grid(row=7, column=0)
-
-# Images
-imageA = ImageTk.PhotoImage(Image.open("test2.png").resize((150, 150)))
-guiImageA = Label(tk_root, image=imageA)
-guiImageA.grid(row=5, column=0)
-
-imageB = ImageTk.PhotoImage(Image.open("test2.png").resize((150, 150)))
-guiImageB = Label(tk_root, image=imageB)
-guiImageB.grid(row=5, column=1)
 
 # Progressbar
 progressBari = Progressbar(tk_root, orient="horizontal", length=300)
