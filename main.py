@@ -9,9 +9,10 @@ import _thread
 from tkinter import *
 from tkinter import filedialog as fd
 from tkinter.ttk import Progressbar
-# import cv2
+import cv2
 from PIL import ImageTk, Image
 from image_similarity_calculator import ImageSimilarityCalculator
+from skimage.metrics import structural_similarity
 import glob
 # import pprint
 import json
@@ -96,15 +97,14 @@ def startThread():
 def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Threads, now without it, the gui fucks up
     global breakFlag
     breakFlag = False
-
+    imageSize = 200
+    imageSize = (imageSize, imageSize)
     buttonStartSearchForDupes.grid_forget()  # hides Button
     buttonStopSearch.grid(row=2, column=0)
-
     labelSimilarImagesFound.config(text="No Similar Pictures Found")
     progressBari['value'] = 0  # resets the progressbar
     progressBarj['value'] = 0  # resets the progressbar
     tk_root.update_idletasks()  # updates GUI
-
     clearDict()
     listOfAllImageFiles()
     threshold = float(thresholdTextfield.get()) / 100
@@ -113,6 +113,9 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
     for i in range(0, len(imageFilesInWorkingFolder)):
         if breakFlag:  # Escapes the search
             break
+        imageA = cv2.imread(str(imageFilesInWorkingFolder[i]))
+        imageA = cv2.resize(imageA, imageSize)
+        #imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
         setImageAInGUI(imageFilesInWorkingFolder[i])
         for j in range(1 + i, len(imageFilesInWorkingFolder)):
             if breakFlag:  # Escapes the search
@@ -120,14 +123,17 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
             setImageBInGUI(imageFilesInWorkingFolder[j])
             labelCurrentFile.config(text="at File: " + str(imageFilesInWorkingFolder[j]))
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j]):
-                score, pathToA, pathToB = compare2Images(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j])
+                imageB = cv2.imread(str(imageFilesInWorkingFolder[j]))
+                imageB = cv2.resize(imageB, imageSize)
+                #imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
+                (score, diff) = structural_similarity(imageA, imageB, multichannel=True, full=True)
                 if score >= threshold:
                     if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
                         createNewKeyInDict(imageFilesInWorkingFolder[i])
                     similarImagesCounter += 1
                     labelSimilarImagesFound.config(text="Found: " + str(similarImagesCounter) + " Duplicates")
-                    print("Found One: " + str(pathToB))
-                    addValueToDictKey(pathToA, pathToB)
+                    print("Found One: " + str(imageFilesInWorkingFolder[j]))
+                    addValueToDictKey(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j])
             progressBarj['value'] = (100 * (j - i)) / (len(imageFilesInWorkingFolder) - i)  # shows single file progress
             if j == len(imageFilesInWorkingFolder) - 1:
                 progressBarj['value'] = 100  # fills the progressbar complete, so it wont look like it stuck
@@ -175,13 +181,20 @@ def stopSearch():
     breakFlag = True
 
 
-def test():
+def showDuplicates():
     global imageA
+    global imageB
     global image_score_dict
-    keyList = list(image_score_dict.keys())
-    imageA = ImageTk.PhotoImage(Image.open(keyList[1]).resize((150, 150)))
+    with open('data.json') as json_file:
+        data = json.load(json_file)
+    keyList = list(data)
+    print(keyList[0])
+    imageA = ImageTk.PhotoImage(Image.open(keyList[0]).resize((150, 150)))
     guiImageA = Label(tk_root, image=imageA)
-    guiImageA.grid(row=5, column=0)
+    guiImageA.grid(row=6, column=0)
+    imageB = ImageTk.PhotoImage(Image.open(keyList[1]).resize((150, 150)))
+    guiImageB = Label(tk_root, image=imageB)
+    guiImageB.grid(row=6, column=1)
 
 
 # GUI
@@ -202,7 +215,7 @@ buttonToSetPathToWorkingFolder.grid(row=0, column=0)
 buttonStartSearchForDupes = Button(tk_root, text="Start Search For Dupes", command=startThread)
 buttonStartSearchForDupes.grid(row=2, column=0)
 buttonStopSearch = Button(tk_root, text="Stop Search!", command=stopSearch)
-testButton = Button(tk_root, text="Test Me", command=test)
+testButton = Button(tk_root, text="Show Duplicates", command=showDuplicates)
 testButton.grid(row=7, column=0)
 
 # Progressbar
