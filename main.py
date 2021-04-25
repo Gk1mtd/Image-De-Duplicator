@@ -6,6 +6,7 @@
 import _thread
 # import datetime
 # import multiprocessing
+import os
 from tkinter import *
 from tkinter import filedialog as fd
 from tkinter.ttk import Progressbar
@@ -114,25 +115,32 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
         if breakFlag:  # Escapes the search
             break
         imageA = cv2.imread(str(imageFilesInWorkingFolder[i]))
-        imageA = cv2.resize(imageA, imageSize)
-        #imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
+        try:
+            imageA = cv2.resize(imageA, imageSize)
+        except Exception as e:
+            print("Resizing not possible: " + str(imageA))
         setImageAInGUI(imageFilesInWorkingFolder[i])
         for j in range(1 + i, len(imageFilesInWorkingFolder)):
             if breakFlag:  # Escapes the search
                 break
             setImageBInGUI(imageFilesInWorkingFolder[j])
-            labelCurrentFile.config(text="at File: " + str(imageFilesInWorkingFolder[j]))
+            # labelCurrentFile.config(text="at File: " + str(imageFilesInWorkingFolder[j]))
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j]):
                 imageB = cv2.imread(str(imageFilesInWorkingFolder[j]))
-                imageB = cv2.resize(imageB, imageSize)
-                #imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
-                (score, diff) = structural_similarity(imageA, imageB, multichannel=True, full=True)
+                try:
+                    imageB = cv2.resize(imageB, imageSize)
+                except Exception as e:
+                    print("Resizing not possible: " + str(imageB))
+                try:
+                    (score, diff) = structural_similarity(imageA, imageB, multichannel=True, full=True)
+                except Exception as e:
+                    print("Error checking for similarities")
                 if score >= threshold:
                     if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
                         createNewKeyInDict(imageFilesInWorkingFolder[i])
                     similarImagesCounter += 1
                     labelSimilarImagesFound.config(text="Found: " + str(similarImagesCounter) + " Duplicates")
-                    print("Found One: " + str(imageFilesInWorkingFolder[j]))
+                    #print("Found One: " + str(imageFilesInWorkingFolder[j]))
                     addValueToDictKey(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j])
             progressBarj['value'] = (100 * (j - i)) / (len(imageFilesInWorkingFolder) - i)  # shows single file progress
             if j == len(imageFilesInWorkingFolder) - 1:
@@ -152,7 +160,7 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
 def setPathToWorkingDirectory():
     global pathToWorkingFolder
     pathToWorkingFolder = fd.askdirectory() + "/"
-    print("Set Working Directory to: " + pathToWorkingFolder)
+    #print("Set Working Directory to: " + pathToWorkingFolder)
     global labelFolderPath
     labelFolderPath.config(text=pathToWorkingFolder)
 
@@ -167,6 +175,7 @@ def setImageAInGUI(imageFromLoopA):
     imageA = ImageTk.PhotoImage(Image.open(imageFromLoopA).resize((150, 150)))
     guiImageA = Label(tk_root, image=imageA)
     guiImageA.grid(row=6, column=0)
+    print(imageFromLoopA)
 
 
 def setImageBInGUI(imageFromLoopB):
@@ -182,19 +191,22 @@ def stopSearch():
 
 
 def showDuplicates():
-    global imageA
-    global imageB
-    global image_score_dict
+    global keyImage # global machen, damit es auch von außen benutzbar wird, für tk_root
+    global listOfValueImages
     with open('data.json') as json_file:
         data = json.load(json_file)
     keyList = list(data)
-    print(keyList[0])
-    imageA = ImageTk.PhotoImage(Image.open(keyList[0]).resize((150, 150)))
-    guiImageA = Label(tk_root, image=imageA)
-    guiImageA.grid(row=6, column=0)
-    imageB = ImageTk.PhotoImage(Image.open(keyList[1]).resize((150, 150)))
-    guiImageB = Label(tk_root, image=imageB)
-    guiImageB.grid(row=6, column=1)
+
+    #os.remove("demofile.txt")
+
+
+    keyImage = ImageTk.PhotoImage(Image.open(keyList[0]).resize((150, 150)))
+    guikeyImage = Label(tk_root, image=keyImage)
+    guikeyImage.grid(row=8, column=0)
+
+    listOfValueImages = ImageTk.PhotoImage(Image.open(list(data.get(keyList[0]))[0]).resize((150, 150)))
+    guiListOfValueImages = Label(tk_root, image=listOfValueImages)
+    guiListOfValueImages.grid(row=8, column=1)
 
 
 # GUI
