@@ -38,13 +38,6 @@ def listOfAllImageFiles():
     #     print(f)
 
 
-# uses the image-similarity_calculator to check two images against each other, outputs teh score and the paths to
-# the files
-def compare2Images(imageA, imageB):  # ImageA/B are paths, as string, to the specified files
-    score, pathToA, pathToB = obj_imageSimilarityCalculator.ssim_calculation(imageA, imageB)
-    return [score, pathToA, pathToB]
-
-
 # adds the path of imageA to the dictionary. imageA shall be the path and therefore an unique ID. this method
 # is needed to access the "key" imageA and append the paths of similar images
 def createNewKeyInDict(image_A):
@@ -105,6 +98,8 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
     labelSimilarImagesFound.config(text="No Similar Pictures Found")
     progressBari['value'] = 0  # resets the progressbar
     progressBarj['value'] = 0  # resets the progressbar
+    global number
+    number = 0
     tk_root.update_idletasks()  # updates GUI
     clearDict()
     listOfAllImageFiles()
@@ -115,6 +110,7 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
         if breakFlag:  # Escapes the search
             break
         imageA = cv2.imread(str(imageFilesInWorkingFolder[i]))
+        imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
         try:
             imageA = cv2.resize(imageA, imageSize)
         except Exception as e:
@@ -127,6 +123,7 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
             # labelCurrentFile.config(text="at File: " + str(imageFilesInWorkingFolder[j]))
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j]):
                 imageB = cv2.imread(str(imageFilesInWorkingFolder[j]))
+                imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
                 try:
                     imageB = cv2.resize(imageB, imageSize)
                 except Exception as e:
@@ -175,7 +172,7 @@ def setImageAInGUI(imageFromLoopA):
     imageA = ImageTk.PhotoImage(Image.open(imageFromLoopA).resize((150, 150)))
     guiImageA = Label(tk_root, image=imageA)
     guiImageA.grid(row=6, column=0)
-    print(imageFromLoopA)
+    #print(imageFromLoopA)
 
 
 def setImageBInGUI(imageFromLoopB):
@@ -189,8 +186,13 @@ def stopSearch():
     global breakFlag
     breakFlag = True
 
-
+def showNextDuplicates():
+    global number
+    number += 1
+number = 0
 def showDuplicates():
+    global number
+
     global keyImage # global machen, damit es auch von außen benutzbar wird, für tk_root
     global listOfValueImages
     with open('data.json') as json_file:
@@ -198,13 +200,15 @@ def showDuplicates():
     keyList = list(data)
 
     #os.remove("demofile.txt")
+    os.startfile(keyList[number])
+    for i in list(data.get(keyList[number])):
+        os.startfile(list(data.get(keyList[number]))[0])
 
-
-    keyImage = ImageTk.PhotoImage(Image.open(keyList[0]).resize((150, 150)))
+    keyImage = ImageTk.PhotoImage(Image.open(keyList[number]).resize((150, 150)))
     guikeyImage = Label(tk_root, image=keyImage)
     guikeyImage.grid(row=8, column=0)
 
-    listOfValueImages = ImageTk.PhotoImage(Image.open(list(data.get(keyList[0]))[0]).resize((150, 150)))
+    listOfValueImages = ImageTk.PhotoImage(Image.open(list(data.get(keyList[number]))[0]).resize((150, 150)))
     guiListOfValueImages = Label(tk_root, image=listOfValueImages)
     guiListOfValueImages.grid(row=8, column=1)
 
@@ -227,8 +231,10 @@ buttonToSetPathToWorkingFolder.grid(row=0, column=0)
 buttonStartSearchForDupes = Button(tk_root, text="Start Search For Dupes", command=startThread)
 buttonStartSearchForDupes.grid(row=2, column=0)
 buttonStopSearch = Button(tk_root, text="Stop Search!", command=stopSearch)
-testButton = Button(tk_root, text="Show Duplicates", command=showDuplicates)
-testButton.grid(row=7, column=0)
+buttonShowDuplicates = Button(tk_root, text="Show Duplicates", command=showDuplicates)
+buttonShowDuplicates.grid(row=7, column=0)
+buttonShowNextDuplicates = Button(tk_root, text="Show Next Duplicates", command=showNextDuplicates)
+buttonShowNextDuplicates.grid(row=7, column=1)
 
 # Progressbar
 progressBari = Progressbar(tk_root, orient="horizontal", length=300)
