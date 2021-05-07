@@ -7,6 +7,7 @@ import _thread
 # import datetime
 # import multiprocessing
 import os
+import pprint
 from tkinter import *
 from tkinter import filedialog as fd
 from tkinter.ttk import Progressbar
@@ -22,9 +23,10 @@ import sys
 # Variables and Objects
 pathToWorkingFolder = ""
 global imageFilesInWorkingFolder
-image_score_dict = {}
-obj_imageSimilarityCalculator = ImageSimilarityCalculator()
-
+# image_score_dict = {}
+#archetype
+# imageScoreList = [["og_file_path",["path", 0.4]], ["og_file_path",["path", 0.4]]]
+imageScoreList = []
 
 # Searches through the designated work path and adds all files with specific post-fix to a list
 def listOfAllImageFiles():
@@ -88,67 +90,89 @@ def startThread():
 
 # Essentialy takes all the filenames in the specified folder and runs it through the imageComparisonAlogrithm.
 # It then fills a dictionary ith images and their duplicates
+def clearList():
+    pass
+
+
 def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Threads, now without it, the gui fucks up
     global breakFlag
     breakFlag = False
-    imageSize = 200
+    imageSize = 200 # imageSize the pictures will be reduced to, for faster scanning
     imageSize = (imageSize, imageSize)
-    buttonStartSearchForDupes.grid_forget()  # hides Button
+
+    # gui stuff
+    buttonCalculateImageScores.grid_forget()  # hides Button
     buttonStopSearch.grid(row=2, column=0)
     labelSimilarImagesFound.config(text="No Similar Pictures Found")
     progressBari['value'] = 0  # resets the progressbar
     progressBarj['value'] = 0  # resets the progressbar
-    global number
+
+    global number # used for showing live images of the ongoing search
     number = 0
+
     tk_root.update_idletasks()  # updates GUI
-    clearDict()
+
+    # clearDict()
+    # clears list
+    imageScoreList.clear()
+
     listOfAllImageFiles()
-    threshold = float(thresholdTextfield.get()) / 100
+
     similarImagesCounter = 0
+
     # start = datetime.datetime.now()
     for i in range(0, len(imageFilesInWorkingFolder)):
+
         if breakFlag:  # Escapes the search
             break
+
+        imageScoreList.append([])
+        imageScoreList[i].append(imageFilesInWorkingFolder[i])
+        imageScoreList[i].append([])
+
         imageA = cv2.imread(str(imageFilesInWorkingFolder[i]))
         imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
         try:
             imageA = cv2.resize(imageA, imageSize)
         except Exception as e:
             print("Resizing not possible: " + str(imageA))
+
         setImageAInGUI(imageFilesInWorkingFolder[i])
-        for j in range(1 + i, len(imageFilesInWorkingFolder)):
+
+        for j in range(0, len(imageFilesInWorkingFolder)):
+
             if breakFlag:  # Escapes the search
                 break
+
             setImageBInGUI(imageFilesInWorkingFolder[j])
             # labelCurrentFile.config(text="at File: " + str(imageFilesInWorkingFolder[j]))
-            if not checkDictForExistingValues(imageFilesInWorkingFolder[j]):
-                imageB = cv2.imread(str(imageFilesInWorkingFolder[j]))
-                imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
-                try:
-                    imageB = cv2.resize(imageB, imageSize)
-                except Exception as e:
-                    print("Resizing not possible: " + str(imageB))
-                try:
-                    (score, diff) = structural_similarity(imageA, imageB, multichannel=True, full=True)
-                except Exception as e:
-                    print("Error checking for similarities")
-                if score >= threshold:
-                    if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
-                        createNewKeyInDict(imageFilesInWorkingFolder[i])
-                    similarImagesCounter += 1
-                    labelSimilarImagesFound.config(text="Found: " + str(similarImagesCounter) + " Duplicates")
-                    #print("Found One: " + str(imageFilesInWorkingFolder[j]))
-                    addValueToDictKey(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j])
+
+            imageB = cv2.imread(str(imageFilesInWorkingFolder[j]))
+            imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
+            try:
+                imageB = cv2.resize(imageB, imageSize)
+            except Exception as e:
+                print("Resizing not possible: " + str(imageB))
+
+            try:
+                (score, diff) = structural_similarity(imageA, imageB, multichannel=True, full=True)
+            except Exception as e:
+                print("Error checking for similarities")
+
+            # addValueToDictKey(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j])
+            imageScoreList[i][1].append([])
+            imageScoreList[i][1][j].append(imageFilesInWorkingFolder[j])
+            imageScoreList[i][1][j].append(score)
+
             progressBarj['value'] = (100 * (j - i)) / (len(imageFilesInWorkingFolder) - i)  # shows single file progress
             if j == len(imageFilesInWorkingFolder) - 1:
                 progressBarj['value'] = 100  # fills the progressbar complete, so it wont look like it stuck
             tk_root.update_idletasks()  # updates GUI
         progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
         tk_root.update_idletasks()  # updates GUI
-        dumpToJSON()  # saves all ocurences of smilar images right away // dont loose your progress bro
-    dumpToJSON()
+
     buttonStopSearch.grid_forget()
-    buttonStartSearchForDupes.grid(row=2, column=0)  # shows the Search Button again
+    buttonCalculateImageScores.grid(row=2, column=0)  # shows the Search Button again
     # pprint.pprint(image_score_dict)
     # finish = datetime.datetime.now()
     # print(finish - start)
@@ -191,26 +215,28 @@ def showNextDuplicates():
     number += 1
 number = 0
 def showDuplicates():
-    global number
-
-    global keyImage # global machen, damit es auch von außen benutzbar wird, für tk_root
-    global listOfValueImages
-    with open('data.json') as json_file:
-        data = json.load(json_file)
-    keyList = list(data)
-
-    #os.remove("demofile.txt")
-    os.startfile(keyList[number])
-    for i in list(data.get(keyList[number])):
-        os.startfile(list(data.get(keyList[number]))[0])
-
-    keyImage = ImageTk.PhotoImage(Image.open(keyList[number]).resize((150, 150)))
-    guikeyImage = Label(tk_root, image=keyImage)
-    guikeyImage.grid(row=8, column=0)
-
-    listOfValueImages = ImageTk.PhotoImage(Image.open(list(data.get(keyList[number]))[0]).resize((150, 150)))
-    guiListOfValueImages = Label(tk_root, image=listOfValueImages)
-    guiListOfValueImages.grid(row=8, column=1)
+    global imageScoreList
+    pprint.pprint(imageScoreList)
+    # global number
+    #
+    # global keyImage # global machen, damit es auch von außen benutzbar wird, für tk_root
+    # global listOfValueImages
+    # with open('data.json') as json_file:
+    #     data = json.load(json_file)
+    # keyList = list(data)
+    #
+    # #os.remove("demofile.txt")
+    # os.startfile(keyList[number])
+    # for i in list(data.get(keyList[number])):
+    #     os.startfile(list(data.get(keyList[number]))[0])
+    #
+    # keyImage = ImageTk.PhotoImage(Image.open(keyList[number]).resize((150, 150)))
+    # guikeyImage = Label(tk_root, image=keyImage)
+    # guikeyImage.grid(row=8, column=0)
+    #
+    # listOfValueImages = ImageTk.PhotoImage(Image.open(list(data.get(keyList[number]))[0]).resize((150, 150)))
+    # guiListOfValueImages = Label(tk_root, image=listOfValueImages)
+    # guiListOfValueImages.grid(row=8, column=1)
 
 
 # GUI
@@ -228,9 +254,10 @@ tk_root.geometry("+{}+{}".format(positionRight, positionDown))
 buttonToSetPathToWorkingFolder = Button(tk_root, text="Set Path To Working Directory",
                                         command=setPathToWorkingDirectory)
 buttonToSetPathToWorkingFolder.grid(row=0, column=0)
-buttonStartSearchForDupes = Button(tk_root, text="Start Search For Dupes", command=startThread)
-buttonStartSearchForDupes.grid(row=2, column=0)
+buttonCalculateImageScores = Button(tk_root, text="Calculate Image Scores", command=startThread)
+buttonCalculateImageScores.grid(row=2, column=0)
 buttonStopSearch = Button(tk_root, text="Stop Search!", command=stopSearch)
+
 buttonShowDuplicates = Button(tk_root, text="Show Duplicates", command=showDuplicates)
 buttonShowDuplicates.grid(row=7, column=0)
 buttonShowNextDuplicates = Button(tk_root, text="Show Next Duplicates", command=showNextDuplicates)
