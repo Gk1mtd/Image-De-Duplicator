@@ -216,7 +216,17 @@ def showNextDuplicates():
 number = 0
 def showDuplicates():
     global imageScoreList
-    pprint.pprint(imageScoreList)
+    #pprint.pprint(imageScoreList)
+    threshold = float(thresholdTextfield.get()) / 100
+
+
+    for i in range(0, len(imageScoreList)):
+        for j in range(0, len(imageScoreList)):
+            if imageScoreList[i][1][j][1] >= threshold:
+                #os.startfile(imageScoreList)
+
+                print(str(imageScoreList[i][1][j][0]) + ": " + str(imageScoreList[i][1][j][1]))
+
     #
     # global number
     #
