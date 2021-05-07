@@ -217,6 +217,7 @@ number = 0
 def showDuplicates():
     global imageScoreList
     pprint.pprint(imageScoreList)
+    #
     # global number
     #
     # global keyImage # global machen, damit es auch von außen benutzbar wird, für tk_root
