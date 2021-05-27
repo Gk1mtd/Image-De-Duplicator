@@ -168,7 +168,7 @@ def setImageAInGUI(imageFromLoopA):
     global imageA
     imageA = ImageTk.PhotoImage(Image.open(imageFromLoopA).resize((150, 150)))
     guiImageA = Label(tk_root, image=imageA)
-    guiImageA.grid(row=6, column=0)
+    guiImageA.grid(row=5, column=0)
     # print(imageFromLoopA)
 
 
@@ -176,7 +176,7 @@ def setImageBInGUI(imageFromLoopB):
     global imageB
     imageB = ImageTk.PhotoImage(Image.open(imageFromLoopB).resize((150, 150)))
     guiImageB = Label(tk_root, image=imageB)
-    guiImageB.grid(row=6, column=1)
+    guiImageB.grid(row=5, column=1)
 
 
 def stopSearch():
@@ -236,30 +236,16 @@ def calculateDuplicates():
         for element in popList:
             filteredDict.pop(element)
 
-    pprint.pprint(filteredDict)
+    # counts
+    count = 0
+    for x in filteredDict.values():
+        for y in x:
+            count += 1
+    print(count)
+    labelSimilarImagesFound.config(text="Found " + str(count) + " duplicates")
+
+    # pprint.pprint(filteredDict)
     print("#########################")
-    # clean up the filteredDict, so no key is also a value in another key
-
-    # if not checkDictForExistingKeys(imageFilesInWorkingFolder[i], image_score_dict):
-    #     createNewKeyInDict(imageFilesInWorkingFolder[i])
-    # addValueToDictKey(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], score)
-
-    # #os.remove("demofile.txt")
-    # for i, key in enumerate(data):
-    #     print(i, key)
-    #
-    # os.startfile(keyList[number]) # opens the path of the key
-    # for i in list(data.get(keyList[number])): # open all occurences with same or higher threshold of score from key
-    #     if float(data.get(keyList[number])[i][1]) >= threshold:
-    #         os.startfile(data.get(keyList[number])[i][0])
-
-    # keyImage = ImageTk.PhotoImage(Image.open(keyList[number]).resize((150, 150)))
-    # guikeyImage = Label(tk_root, image=keyImage)
-    # guikeyImage.grid(row=8, column=0)
-    #
-    # listOfValueImages = ImageTk.PhotoImage(Image.open(list(data.get(keyList[number]))[0]).resize((150, 150)))
-    # guiListOfValueImages = Label(tk_root, image=listOfValueImages)
-    # guiListOfValueImages.grid(row=8, column=1)
 
 
 # GUI
