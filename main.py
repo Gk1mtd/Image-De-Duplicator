@@ -244,7 +244,7 @@ def calculateDuplicates():
     labelSimilarImagesFound.config(text=str(len(filteredDict.values())) + " images have " + str(count) + " duplicates")
 
     # pprint.pprint(filteredDict)
-    print("#########################")
+    #print("#########################")
 
 
 # GUI
