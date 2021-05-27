@@ -236,13 +236,12 @@ def calculateDuplicates():
         for element in popList:
             filteredDict.pop(element)
 
-    # counts
+    # counts duplicates
     count = 0
     for x in filteredDict.values():
         for y in x:
             count += 1
-    print(count)
-    labelSimilarImagesFound.config(text="Found " + str(count) + " duplicates")
+    labelSimilarImagesFound.config(text=str(len(filteredDict.values())) + " images have " + str(count) + " duplicates")
 
     # pprint.pprint(filteredDict)
     print("#########################")
