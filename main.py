@@ -94,7 +94,7 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
     imageSize = 200
     imageSize = (imageSize, imageSize)
     buttonStartSearchForDupes.grid_forget()  # hides Button
-    buttonStopSearch.grid(row=2, column=0)
+    buttonStopSearch.grid(row=1, column=0, columnspan=2)
     labelSimilarImagesFound.config(text="No Similar Pictures Found")
     progressBari['value'] = 0  # resets the progressbar
     progressBarj['value'] = 0  # resets the progressbar
@@ -145,7 +145,7 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
         # dumpToJSON()  # saves all ocurences of smilar images right away // dont loose your progress bro
     dumpToJSON()
     buttonStopSearch.grid_forget()
-    buttonStartSearchForDupes.grid(row=2, column=0)  # shows the Search Button again
+    buttonStartSearchForDupes.grid(row=1, column=0, columnspan=2)  # shows the Search Button again
     # pprint.pprint(image_score_dict)
     # finish = datetime.datetime.now()
     # print(finish - start)
@@ -277,33 +277,33 @@ tk_root.geometry("+{}+{}".format(positionRight, positionDown))
 buttonToSetPathToWorkingFolder = Button(tk_root, text="Set Path To Working Directory",
                                         command=setPathToWorkingDirectory)
 buttonToSetPathToWorkingFolder.grid(row=0, column=0)
-buttonStartSearchForDupes = Button(tk_root, text="Start Search For Dupes", command=startThread)
-buttonStartSearchForDupes.grid(row=2, column=0)
-buttonStopSearch = Button(tk_root, text="Stop Search!", command=stopSearch)
-buttonCalculateDuplicates = Button(tk_root, text="Calculate Duplicates", command=calculateDuplicates)
+buttonStartSearchForDupes = Button(tk_root, text="Calculate score of images", command=startThread)
+buttonStartSearchForDupes.grid(row=1, column=0, columnspan=2)
+buttonStopSearch = Button(tk_root, text="Stop calculating!", command=stopSearch)
+buttonCalculateDuplicates = Button(tk_root, text="Filter Duplicates by threshold", command=calculateDuplicates)
 buttonCalculateDuplicates.grid(row=7, column=0)
 buttonShowNextDuplicates = Button(tk_root, text="Show Next Duplicates", command=showNextDuplicates)
-buttonShowNextDuplicates.grid(row=7, column=1)
+buttonShowNextDuplicates.grid(row=8, column=0, columnspan=2)
 
 # Progressbar
 progressBari = Progressbar(tk_root, orient="horizontal", length=300)
-progressBari.grid(row=3, column=0, columnspan=2)
+progressBari.grid(row=2, column=0, columnspan=2)
 progressBarj = Progressbar(tk_root, orient="horizontal", length=300)
-progressBarj.grid(row=4, column=0, columnspan=2)
+progressBarj.grid(row=3, column=0, columnspan=2)
 
 # Textfield/Entry
 thresholdTextfield = Entry(tk_root)
 thresholdTextfield.insert(0, "70")
-thresholdTextfield.grid(row=1, column=1)
+thresholdTextfield.grid(row=6, column=1)
 
 # Label
 labelFolderPath = Label(tk_root, text="Current Working Directory")
 labelFolderPath.grid(row=0, column=1)
 labelThreshold = Label(tk_root, text="Similarity Threshold in % ->")
-labelThreshold.grid(row=1, column=0)
+labelThreshold.grid(row=6, column=0)
 labelCurrentFile = Label(tk_root, text="Current File", wraplength=300)
-labelCurrentFile.grid(row=5, column=0, columnspan=2)
+labelCurrentFile.grid(row=4, column=0, columnspan=2)
 labelSimilarImagesFound = Label(tk_root, text="No Similar Pictures Found")
-labelSimilarImagesFound.grid(row=2, column=1)
+labelSimilarImagesFound.grid(row=7, column=1)
 
 mainloop()
