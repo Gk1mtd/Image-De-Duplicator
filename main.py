@@ -15,7 +15,7 @@ from PIL import ImageTk, Image
 from image_similarity_calculator import ImageSimilarityCalculator
 from skimage.metrics import structural_similarity
 import glob
-# import pprint
+import pprint
 import json
 import sys
 
@@ -40,36 +40,36 @@ def listOfAllImageFiles():
 
 # adds the path of imageA to the dictionary. imageA shall be the path and therefore an unique ID. this method
 # is needed to access the "key" imageA and append the paths of similar images
-def createNewKeyInDict(image_A):
-    global image_score_dict
-    image_score_dict[image_A] = []
+def createNewKeyInDict(key, dict):
+    dict[key] = []
 
 
 # resets the dict to nothing
-def clearDict():
-    global image_score_dict
-    image_score_dict = {}
+def clearDict(dict):
+    # dict = {}
+    dict.clear()
 
 
 # appends a value to the key of the dictionary
-def addValueToDictKey(image_A, similar_file_B):
-    global image_score_dict
-    image_score_dict[image_A].append(similar_file_B)
+def addValueToDictKey(key, value, score, dict):
+    dict[key].append((value, score))
     # print("Added a new Value for Key: " + str(image_A) + " Value: " + str(similar_file_B))
     # pprint.pprint(image_score_dict)
 
 
-def checkDictForExistingKeys(key):
-    global image_score_dict
+def addValueToFilteredDictKey(key, value, dict):
+    dict[key].append(value)
+
+
+def checkDictForExistingKeys(key, dict):
     if key in image_score_dict:
         return True
     else:
         return False
 
 
-def checkDictForExistingValues(value):
-    global image_score_dict
-    for i in image_score_dict.values():
+def checkDictForExistingValues(value, dict):
+    for i in dict.values():
         if value in i:
             return True
         else:
@@ -101,7 +101,7 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
     global number
     number = 0
     tk_root.update_idletasks()  # updates GUI
-    clearDict()
+    clearDict(image_score_dict)
     listOfAllImageFiles()
     threshold = float(thresholdTextfield.get()) / 100
     similarImagesCounter = 0
@@ -121,7 +121,7 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
                 break
             setImageBInGUI(imageFilesInWorkingFolder[j])
             # labelCurrentFile.config(text="at File: " + str(imageFilesInWorkingFolder[j]))
-            if not checkDictForExistingValues(imageFilesInWorkingFolder[j]):
+            if not checkDictForExistingValues(imageFilesInWorkingFolder[j], image_score_dict):
                 imageB = cv2.imread(str(imageFilesInWorkingFolder[j]))
                 imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
                 try:
@@ -132,20 +132,17 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
                     (score, diff) = structural_similarity(imageA, imageB, multichannel=True, full=True)
                 except Exception as e:
                     print("Error checking for similarities")
-                if score >= threshold:
-                    if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
-                        createNewKeyInDict(imageFilesInWorkingFolder[i])
-                    similarImagesCounter += 1
-                    labelSimilarImagesFound.config(text="Found: " + str(similarImagesCounter) + " Duplicates")
-                    #print("Found One: " + str(imageFilesInWorkingFolder[j]))
-                    addValueToDictKey(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j])
+
+                if not checkDictForExistingKeys(imageFilesInWorkingFolder[i], image_score_dict):
+                    createNewKeyInDict(imageFilesInWorkingFolder[i], image_score_dict)
+                addValueToDictKey(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], score, image_score_dict)
             progressBarj['value'] = (100 * (j - i)) / (len(imageFilesInWorkingFolder) - i)  # shows single file progress
             if j == len(imageFilesInWorkingFolder) - 1:
                 progressBarj['value'] = 100  # fills the progressbar complete, so it wont look like it stuck
             tk_root.update_idletasks()  # updates GUI
         progressBari['value'] = ((100 * (i + 1)) / len(imageFilesInWorkingFolder))  # shows total Progress
         tk_root.update_idletasks()  # updates GUI
-        dumpToJSON()  # saves all ocurences of smilar images right away // dont loose your progress bro
+        # dumpToJSON()  # saves all ocurences of smilar images right away // dont loose your progress bro
     dumpToJSON()
     buttonStopSearch.grid_forget()
     buttonStartSearchForDupes.grid(row=2, column=0)  # shows the Search Button again
@@ -157,7 +154,7 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
 def setPathToWorkingDirectory():
     global pathToWorkingFolder
     pathToWorkingFolder = fd.askdirectory() + "/"
-    #print("Set Working Directory to: " + pathToWorkingFolder)
+    # print("Set Working Directory to: " + pathToWorkingFolder)
     global labelFolderPath
     labelFolderPath.config(text=pathToWorkingFolder)
 
@@ -172,7 +169,7 @@ def setImageAInGUI(imageFromLoopA):
     imageA = ImageTk.PhotoImage(Image.open(imageFromLoopA).resize((150, 150)))
     guiImageA = Label(tk_root, image=imageA)
     guiImageA.grid(row=6, column=0)
-    #print(imageFromLoopA)
+    # print(imageFromLoopA)
 
 
 def setImageBInGUI(imageFromLoopB):
@@ -186,31 +183,83 @@ def stopSearch():
     global breakFlag
     breakFlag = True
 
+
 def showNextDuplicates():
     global number
     number += 1
-number = 0
-def showDuplicates():
+
+
+number = 0  # just for testing here, delte it at will
+
+
+def calculateDuplicates():
     global number
-
-    global keyImage # global machen, damit es auch von außen benutzbar wird, für tk_root
+    threshold = float(thresholdTextfield.get()) / 100
+    global keyImage  # global machen, damit es auch von außen benutzbar wird, für tk_root
     global listOfValueImages
+
     with open('data.json') as json_file:
-        data = json.load(json_file)
-    keyList = list(data)
+        data = json.load(json_file)  # parsed the ext json back to a dict
 
-    #os.remove("demofile.txt")
-    os.startfile(keyList[number])
-    for i in list(data.get(keyList[number])):
-        os.startfile(list(data.get(keyList[number]))[0])
+    filteredDict = {}
 
-    keyImage = ImageTk.PhotoImage(Image.open(keyList[number]).resize((150, 150)))
-    guikeyImage = Label(tk_root, image=keyImage)
-    guikeyImage.grid(row=8, column=0)
+    # search through the data dict and makes a new one (called filteredDict), matching the threshold level
+    for key in data:
+        # pprint.pprint("item: " + str(key))
+        createNewKeyInDict(key, filteredDict)
+        for valueTupel in data[key]:
+            # print("key: " + str(key) + " ### value: " + str(valueTupel))
+            if valueTupel[1] >= threshold:
+                addValueToFilteredDictKey(key, valueTupel[0], filteredDict)
+                for x in filteredDict:
+                    pass # print("#### values: " + str(filteredDict[x]))
 
-    listOfValueImages = ImageTk.PhotoImage(Image.open(list(data.get(keyList[number]))[0]).resize((150, 150)))
-    guiListOfValueImages = Label(tk_root, image=listOfValueImages)
-    guiListOfValueImages.grid(row=8, column=1)
+    # clears filteredDict from empty keys
+    popList = []
+    for key in filteredDict:
+        if not filteredDict.get(key):
+            popList.append(key)
+    for element in popList:
+        filteredDict.pop(element)
+
+    # clears dict of keys which are already values
+    popList = []
+    for key in filteredDict:
+        for valueList in filteredDict.values():
+            for value in valueList:
+                if value == key:
+                    popList.append(key)
+    # makes content of poplist unique
+    popList = set(popList)
+    popList = list(popList)
+    if popList != 0:
+        for element in popList:
+            filteredDict.pop(element)
+
+    pprint.pprint(filteredDict)
+    print("#########################")
+    # clean up the filteredDict, so no key is also a value in another key
+
+    # if not checkDictForExistingKeys(imageFilesInWorkingFolder[i], image_score_dict):
+    #     createNewKeyInDict(imageFilesInWorkingFolder[i])
+    # addValueToDictKey(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], score)
+
+    # #os.remove("demofile.txt")
+    # for i, key in enumerate(data):
+    #     print(i, key)
+    #
+    # os.startfile(keyList[number]) # opens the path of the key
+    # for i in list(data.get(keyList[number])): # open all occurences with same or higher threshold of score from key
+    #     if float(data.get(keyList[number])[i][1]) >= threshold:
+    #         os.startfile(data.get(keyList[number])[i][0])
+
+    # keyImage = ImageTk.PhotoImage(Image.open(keyList[number]).resize((150, 150)))
+    # guikeyImage = Label(tk_root, image=keyImage)
+    # guikeyImage.grid(row=8, column=0)
+    #
+    # listOfValueImages = ImageTk.PhotoImage(Image.open(list(data.get(keyList[number]))[0]).resize((150, 150)))
+    # guiListOfValueImages = Label(tk_root, image=listOfValueImages)
+    # guiListOfValueImages.grid(row=8, column=1)
 
 
 # GUI
@@ -231,8 +280,8 @@ buttonToSetPathToWorkingFolder.grid(row=0, column=0)
 buttonStartSearchForDupes = Button(tk_root, text="Start Search For Dupes", command=startThread)
 buttonStartSearchForDupes.grid(row=2, column=0)
 buttonStopSearch = Button(tk_root, text="Stop Search!", command=stopSearch)
-buttonShowDuplicates = Button(tk_root, text="Show Duplicates", command=showDuplicates)
-buttonShowDuplicates.grid(row=7, column=0)
+buttonCalculateDuplicates = Button(tk_root, text="Calculate Duplicates", command=calculateDuplicates)
+buttonCalculateDuplicates.grid(row=7, column=0)
 buttonShowNextDuplicates = Button(tk_root, text="Show Next Duplicates", command=showNextDuplicates)
 buttonShowNextDuplicates.grid(row=7, column=1)
 
