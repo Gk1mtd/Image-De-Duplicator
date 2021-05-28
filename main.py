@@ -22,6 +22,7 @@ import sys
 # Variables and Objects
 pathToWorkingFolder = ""
 global imageFilesInWorkingFolder
+global data
 image_score_dict = {}
 obj_imageSimilarityCalculator = ImageSimilarityCalculator()
 
@@ -78,7 +79,7 @@ def checkDictForExistingValues(value, dict):
 
 def dumpToJSON():
     global image_score_dict
-    with open('data.json', 'w') as outfile:
+    with open(pathToWorkingFolder+"duplicates.json", 'w') as outfile:
         json.dump(image_score_dict, outfile)
 
 
@@ -184,9 +185,9 @@ def stopSearch():
     breakFlag = True
 
 
-def showNextDuplicates():
-    global number
-    number += 1
+def LoadJsonFile():
+    with open(fd.askopenfilename()) as json_file:
+        data = json.load(json_file)  # parsed the ext json back to a dict
 
 
 def calculateDuplicates():
@@ -194,7 +195,7 @@ def calculateDuplicates():
     global keyImage  # global machen, damit es auch von außen benutzbar wird, für tk_root
     global listOfValueImages
 
-    with open('data.json') as json_file:
+    with open('duplicates.json') as json_file:
         data = json.load(json_file)  # parsed the ext json back to a dict
 
     global filteredDict
@@ -289,8 +290,8 @@ buttonStartSearchForDupes.grid(row=1, column=0, columnspan=2)
 buttonStopSearch = Button(tk_root, text="Stop calculating!", command=stopSearch)
 buttonCalculateDuplicates = Button(tk_root, text="Filter Duplicates by threshold", command=calculateDuplicates)
 buttonCalculateDuplicates.grid(row=7, column=0)
-buttonShowNextDuplicates = Button(tk_root, text="Show Next Duplicates", command=showNextDuplicates)
-buttonShowNextDuplicates.grid(row=8, column=0, columnspan=2)
+buttonLoadJsonFile = Button(tk_root, text="Load Json File", command=LoadJsonFile)
+buttonLoadJsonFile.grid(row=8, column=0, columnspan=2)
 
 # Progressbar
 progressBari = Progressbar(tk_root, orient="horizontal", length=300)
