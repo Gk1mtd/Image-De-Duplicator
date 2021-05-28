@@ -189,11 +189,7 @@ def showNextDuplicates():
     number += 1
 
 
-number = 0  # just for testing here, delte it at will
-
-
 def calculateDuplicates():
-    global number
     threshold = float(thresholdTextfield.get()) / 100
     global keyImage  # global machen, damit es auch von außen benutzbar wird, für tk_root
     global listOfValueImages
@@ -201,6 +197,7 @@ def calculateDuplicates():
     with open('data.json') as json_file:
         data = json.load(json_file)  # parsed the ext json back to a dict
 
+    global filteredDict
     filteredDict = {}
 
     # search through the data dict and makes a new one (called filteredDict), matching the threshold level
@@ -243,8 +240,28 @@ def calculateDuplicates():
             count += 1
     labelSimilarImagesFound.config(text=str(len(filteredDict.values())) + " images have " + str(count) + " duplicates")
 
+    # **********listbox
+    listvariable = list(filteredDict.keys())
+    listvariable = StringVar(value=listvariable)
+
+    global listbox
+    listbox = Listbox(tk_root, listvariable=listvariable, height=8, width=80)
+    listbox.grid(row=9, column=0, columnspan=2)
+    listbox.bind('<<ListboxSelect>>', items_selected)
+
     # pprint.pprint(filteredDict)
     #print("#########################")
+
+def items_selected(event):
+    # get selected indices
+    selected_indices = listbox.curselection()
+    # get selected items
+    selected_langs = ",".join([listbox.get(i) for i in selected_indices])
+    print(f'You selected: {selected_langs}')
+    os.startfile(selected_langs)
+    keyitem = filteredDict.get(selected_langs)
+    for i in keyitem:
+        os.startfile(i)
 
 
 # GUI
