@@ -193,6 +193,7 @@ def stopSearch():
 
 def LoadJsonFile():
     with open(fd.askopenfilename()) as json_file:
+        global data
         data = json.load(json_file)  # parsed the ext json back to a dict
 
 
@@ -201,7 +202,7 @@ def calculateDuplicates():
     global keyImage  # global machen, damit es auch von außen benutzbar wird, für tk_root
     global listOfValueImages
 
-    with open('duplicates.json') as json_file:
+    with open(pathToWorkingFolder+"duplicates.json") as json_file:
         data = json.load(json_file)  # parsed the ext json back to a dict
 
     global filteredDict
