@@ -22,7 +22,7 @@ import sys
 # Variables and Objects
 pathToWorkingFolder = ""
 global imageFilesInWorkingFolder
-global data
+global jsonPath
 image_score_dict = {}
 obj_imageSimilarityCalculator = ImageSimilarityCalculator()
 
@@ -79,6 +79,8 @@ def checkDictForExistingValues(value, dict):
 
 def dumpToJSON():
     global image_score_dict
+    global jsonPath
+    jsonPath = pathToWorkingFolder + "duplicates.json"
     with open(pathToWorkingFolder+"duplicates.json", 'w') as outfile:
         json.dump(image_score_dict, outfile)
 
@@ -192,9 +194,8 @@ def stopSearch():
 
 
 def LoadJsonFile():
-    with open(fd.askopenfilename()) as json_file:
-        global data
-        data = json.load(json_file)  # parsed the ext json back to a dict
+    global jsonPath
+    jsonPath = str(fd.askopenfilename())
 
 
 def calculateDuplicates():
@@ -202,7 +203,7 @@ def calculateDuplicates():
     global keyImage  # global machen, damit es auch von außen benutzbar wird, für tk_root
     global listOfValueImages
 
-    with open(pathToWorkingFolder+"duplicates.json") as json_file:
+    with open(jsonPath) as json_file:
         data = json.load(json_file)  # parsed the ext json back to a dict
 
     global filteredDict
