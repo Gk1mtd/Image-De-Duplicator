@@ -257,11 +257,16 @@ def items_selected(event):
     selected_indices = listbox.curselection()
     # get selected items
     selected_langs = ",".join([listbox.get(i) for i in selected_indices])
-    print(f'You selected: {selected_langs}')
-    os.startfile(selected_langs)
+    try:
+        os.startfile(selected_langs)
+    except:
+        pass
     keyitem = filteredDict.get(selected_langs)
-    for i in keyitem:
-        os.startfile(i)
+    try:
+        for i in keyitem:
+            os.startfile(i)
+    except:
+        pass
 
 
 # GUI
