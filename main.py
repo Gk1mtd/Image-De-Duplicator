@@ -111,7 +111,10 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
         if breakFlag:  # Escapes the search
             break
         imageA = cv2.imread(str(imageFilesInWorkingFolder[i]))
-        imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
+        try:
+            imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
+        except:
+            pass
         try:
             imageA = cv2.resize(imageA, imageSize)
         except Exception as e:
@@ -124,7 +127,10 @@ def startSearchForDupes(threadname="Damn Thread!"):  # Since i introduced Thread
             # labelCurrentFile.config(text="at File: " + str(imageFilesInWorkingFolder[j]))
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j], image_score_dict):
                 imageB = cv2.imread(str(imageFilesInWorkingFolder[j]))
-                imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
+                try:
+                    imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
+                except:
+                    pass
                 try:
                     imageB = cv2.resize(imageB, imageSize)
                 except Exception as e:
