@@ -1,11 +1,4 @@
-# Eigentlich sollte ich die Score Daten in einer Datenbank speichern SQLite z.B.
-# damit könnte zu jedem Bild-zu-Bild vergleich der Score gespeichert werden und damit Rechenzeit optimiert
-# da die selben Bilder nicht n^n mal verglichen werden müssen
-# import datetime
-# from time import sleep
 import _thread
-# import datetime
-# import multiprocessing
 import os
 from tkinter import *
 from tkinter import filedialog as fd
@@ -15,12 +8,13 @@ from PIL import ImageTk, Image
 from image_similarity_calculator import ImageSimilarityCalculator
 from skimage.metrics import structural_similarity
 import glob
-import pprint
 import json
 import sys
 
+print('Argument List:', str(sys.argv))
+
 # Variables and Objects
-pathToWorkingFolder = ""
+pathToWorkingFolder = sys.argv[1]
 global imageFilesInWorkingFolder
 global jsonPath
 image_score_dict = {}
