@@ -39,8 +39,15 @@ def calculateDuplicates():
     filteredDict = {}
 
     # search through the data dict and makes a new one (called filteredDict), matching the threshold level
+    count = 0
+    dataLenght = 0
     for key in data:
+        dataLenght += 1
+    for key in data:
+        count += 1
         createNewKeyInDict(key, filteredDict)
+        progressBari['value'] = (count * 100) / dataLenght  # shows total Progress
+        tk_root.update_idletasks()  # updates GUI
         for valueTupel in data[key]:
             if valueTupel[1] >= threshold:
                 addValueToFilteredDictKey(key, valueTupel[0], filteredDict)
@@ -86,7 +93,8 @@ def calculateDuplicates():
     listbox.bind('<<ListboxSelect>>', items_selected)
 
     # pprint.pprint(filteredDict)
-    #print("#########################")
+    # print("#########################")
+
 
 def items_selected(event):
     # get selected indices
@@ -125,8 +133,6 @@ buttonLoadJsonFile.grid(row=0, column=0, columnspan=2)
 # Progressbar
 progressBari = Progressbar(tk_root, orient="horizontal", length=300)
 progressBari.grid(row=3, column=0, columnspan=2)
-progressBarj = Progressbar(tk_root, orient="horizontal", length=300)
-progressBarj.grid(row=4, column=0, columnspan=2)
 
 # Textfield/Entry
 thresholdTextfield = Entry(tk_root)
