@@ -1,5 +1,4 @@
 import cv2
-from image_similarity_calculator import ImageSimilarityCalculator
 from skimage.metrics import structural_similarity
 import glob
 import json
@@ -11,7 +10,6 @@ print('Argument List:', str(sys.argv))
 pathToWorkingFolder = sys.argv[1]
 global imageFilesInWorkingFolder
 image_score_dict = {}
-obj_imageSimilarityCalculator = ImageSimilarityCalculator()
 
 
 # Searches through the designated work path and adds all files with specific post-fix to a list
@@ -60,7 +58,7 @@ def dumpToJSON():
 
 
 # Essentialy takes all the filenames in the specified folder and runs it through the imageComparisonAlogrithm.
-# It then fills a dictionary ith images and their duplicates
+# It then fills a dictionary with images and their duplicates
 def startSearchForDupes():
     breakFlag = False
     imageSize = 200
