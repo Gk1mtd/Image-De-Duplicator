@@ -118,25 +118,25 @@ tk_root.geometry("+{}+{}".format(positionRight, positionDown))
 
 # Buttons
 buttonCalculateDuplicates = Button(tk_root, text="Filter Duplicates by threshold", command=calculateDuplicates)
-buttonCalculateDuplicates.grid(row=7, column=0)
+buttonCalculateDuplicates.grid(row=2, column=0)
 buttonLoadJsonFile = Button(tk_root, text="Load Json File", command=LoadJsonFile)
-buttonLoadJsonFile.grid(row=8, column=0, columnspan=2)
+buttonLoadJsonFile.grid(row=0, column=0, columnspan=2)
 
 # Progressbar
 progressBari = Progressbar(tk_root, orient="horizontal", length=300)
-progressBari.grid(row=2, column=0, columnspan=2)
+progressBari.grid(row=3, column=0, columnspan=2)
 progressBarj = Progressbar(tk_root, orient="horizontal", length=300)
-progressBarj.grid(row=3, column=0, columnspan=2)
+progressBarj.grid(row=4, column=0, columnspan=2)
 
 # Textfield/Entry
 thresholdTextfield = Entry(tk_root)
 thresholdTextfield.insert(0, "70")
-thresholdTextfield.grid(row=6, column=1)
+thresholdTextfield.grid(row=1, column=1)
 
 # Label
 labelThreshold = Label(tk_root, text="Similarity Threshold in % ->")
-labelThreshold.grid(row=6, column=0)
+labelThreshold.grid(row=1, column=0)
 labelSimilarImagesFound = Label(tk_root, text="No Similar Pictures Found")
-labelSimilarImagesFound.grid(row=7, column=1)
+labelSimilarImagesFound.grid(row=2, column=1)
 
 mainloop()
