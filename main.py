@@ -7,7 +7,7 @@ import sys
 print('Argument List:', str(sys.argv))
 
 # Variables and Objects
-pathToWorkingFolder = sys.argv[1]
+pathToWorkingFolder = str(sys.argv[1])
 global imageFilesInWorkingFolder
 image_score_dict = {}
 
@@ -16,9 +16,13 @@ image_score_dict = {}
 def listOfAllImageFiles():
     global imageFilesInWorkingFolder
     imageFilesInWorkingFolder = ""  # CLean Up of the list
-    imageFilesInWorkingFolder = [f for f in glob.glob(pathToWorkingFolder + "**/*.png", recursive=True)]
-    imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "**/*.jpg", recursive=True)]
-    imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "**/*.jpeg", recursive=True)]
+    imageFilesInWorkingFolder = [f for f in glob.glob(pathToWorkingFolder + "/**/*.png", recursive=True)]
+    print("added .png")
+    imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "/**/*.jpg", recursive=True)]
+    print("added .jpg")
+    imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "/**/*.jpeg", recursive=True)]
+    print("added .jpeg")
+    print(imageFilesInWorkingFolder)
 
 
 # adds the path of imageA to the dictionary. imageA shall be the path and therefore an unique ID. this method
@@ -30,10 +34,6 @@ def createNewKeyInDict(key, dict):
 # appends a value to the key of the dictionary
 def addValueToDictKey(key, value, score, dict):
     dict[key].append((value, score))
-
-
-def addValueToFilteredDictKey(key, value, dict):
-    dict[key].append(value)
 
 
 def checkDictForExistingKeys(key, dict):
@@ -60,11 +60,11 @@ def dumpToJSON():
 # Essentialy takes all the filenames in the specified folder and runs it through the imageComparisonAlogrithm.
 # It then fills a dictionary with images and their duplicates
 def startSearchForDupes():
-    breakFlag = False
     imageSize = 200
     imageSize = (imageSize, imageSize)
     listOfAllImageFiles()
     for i in range(0, len(imageFilesInWorkingFolder)):
+        print("File: " + str(i) + " of: " + str(len(imageFilesInWorkingFolder)))
         imageA = cv2.imread(str(imageFilesInWorkingFolder[i]))
         try:
             imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
