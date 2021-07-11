@@ -3,26 +3,24 @@ from skimage.metrics import structural_similarity
 import glob
 import json
 import sys
-
-print('Argument List:', str(sys.argv))
+from tkinter import *
+from tkinter import filedialog as fd
 
 # Variables and Objects
-pathToWorkingFolder = str(sys.argv[1])
 global imageFilesInWorkingFolder
+pathToWorkingFolder = ""
 image_score_dict = {}
 
 
 # Searches through the designated work path and adds all files with specific post-fix to a list
 def listOfAllImageFiles():
+    labelStatus.config(text="Searching for viable images")
+    tk_root.update_idletasks()
     global imageFilesInWorkingFolder
     imageFilesInWorkingFolder = ""  # CLean Up of the list
     imageFilesInWorkingFolder = [f for f in glob.glob(pathToWorkingFolder + "/**/*.png", recursive=True)]
-    print("added .png")
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "/**/*.jpg", recursive=True)]
-    print("added .jpg")
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "/**/*.jpeg", recursive=True)]
-    print("added .jpeg")
-    print(imageFilesInWorkingFolder)
 
 
 # adds the path of imageA to the dictionary. imageA shall be the path and therefore an unique ID. this method
@@ -60,11 +58,16 @@ def dumpToJSON():
 # Essentialy takes all the filenames in the specified folder and runs it through the imageComparisonAlogrithm.
 # It then fills a dictionary with images and their duplicates
 def startSearchForDupes():
+    labelStatus.config(text="Start Scan")
+    tk_root.update_idletasks()  # updates GUI
     imageSize = 200
     imageSize = (imageSize, imageSize)
+    tk_root.update_idletasks()
     listOfAllImageFiles()
     for i in range(0, len(imageFilesInWorkingFolder)):
-        print("File: " + str(i) + " of: " + str(len(imageFilesInWorkingFolder)))
+        labelStatus.config(text="File: " + str(i+1) + " of: " + str(len(imageFilesInWorkingFolder)))
+        tk_root.update_idletasks()
+        print("File: " + str(i+1) + " of: " + str(len(imageFilesInWorkingFolder)))
         imageA = cv2.imread(str(imageFilesInWorkingFolder[i]))
         try:
             imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
@@ -96,4 +99,38 @@ def startSearchForDupes():
     dumpToJSON()
 
 
-startSearchForDupes()
+# Quit Program with shortcut
+def quitProgram(event):
+    sys.exit("ShortCut Quit: Eventmessage: " + str(event))
+
+
+def choseFolder():
+    global pathToWorkingFolder
+    pathToWorkingFolder = fd.askdirectory()
+    print(pathToWorkingFolder)
+    labelStatus.config(text="Folder Selected: " + pathToWorkingFolder)
+    tk_root.update_idletasks()
+
+
+# GUI
+# tk root
+tk_root = Tk()
+tk_root.bind("<Control-q>", quitProgram)  # binding shortcut ctrl+q to function quitProgram()
+tk_root.title("DeDup 1.0")
+# Gets both half the screen width/height and window width/height
+positionRight = int((tk_root.winfo_screenwidth() / 2) - tk_root.winfo_reqwidth())
+positionDown = int((tk_root.winfo_screenheight() / 2) - tk_root.winfo_reqheight())
+# Positions the window in the center of the page.
+tk_root.geometry("+{}+{}".format(positionRight, positionDown))
+
+# Buttons
+startScan = Button(tk_root, text="Start Scan", command=startSearchForDupes)
+startScan.grid(row=1, column=0)
+choseFolder = Button(tk_root, text="Chose Folder", command=choseFolder)
+choseFolder.grid(row=0, column=0)
+
+# Label
+labelStatus = Label(tk_root, text="Not in progress")
+labelStatus.grid(row=2, column=0)
+
+mainloop()
