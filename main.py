@@ -68,8 +68,6 @@ def startSearchForDupes():
     tk_root.update_idletasks()
     listOfAllImageFiles()
     for i in range(0, len(imageFilesInWorkingFolder)):
-        labelStatus.config(text="File: " + str(i+1) + " of: " + str(len(imageFilesInWorkingFolder)))
-        tk_root.update_idletasks()
         # print("File: " + str(i+1) + " of: " + str(len(imageFilesInWorkingFolder)))
         imageA = cv2.imread(str(imageFilesInWorkingFolder[i]))
         try:
@@ -81,6 +79,8 @@ def startSearchForDupes():
         except Exception as e:
             print("Resizing not possible: " + str(imageA))
         for j in range(1 + i, len(imageFilesInWorkingFolder)):
+            labelStatus.config(text="File: " + str(i + 1) + " of: " + str(len(imageFilesInWorkingFolder)) + " | " + str(imageFilesInWorkingFolder[j]))
+            tk_root.update_idletasks()
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j], image_score_dict):
                 imageB = cv2.imread(str(imageFilesInWorkingFolder[j]))
                 try:
@@ -100,11 +100,7 @@ def startSearchForDupes():
                 addValueToDictKey(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], score, image_score_dict)
 
                 finish = datetime.datetime.now()
-                finish = (finish - start)
-                # print(finish.seconds)
-                eta = (finish.seconds / (i+1)) * len(imageFilesInWorkingFolder)
-                # print("eta: " + str(int(eta)))
-                labelTimeLeft.config(text="Time Left: " + str(int(eta) - finish.seconds) + " Seconds")
+                labelTimeLeft.config(text="Time spend: " + str(finish-start))
                 tk_root.update_idletasks()  # updates GUI
     dumpToJSON()
     finish = datetime.datetime.now()
@@ -148,7 +144,7 @@ labelStatus = Label(tk_root, text="Image Dedup by Image Content")
 labelStatus.grid(row=0, column=0, columnspan=2)
 labelStatus = Label(tk_root, text="Not in progress")
 labelStatus.grid(row=3, column=0, columnspan=2)
-labelTimeLeft = Label(tk_root, text="Time Left")
+labelTimeLeft = Label(tk_root, text="Time Spend")
 labelTimeLeft.grid(row=4, column=0, columnspan=2)
 
 mainloop()
