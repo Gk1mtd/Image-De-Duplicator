@@ -1,3 +1,5 @@
+import datetime
+
 import cv2
 from skimage.metrics import structural_similarity
 import glob
@@ -58,6 +60,7 @@ def dumpToJSON():
 # Essentialy takes all the filenames in the specified folder and runs it through the imageComparisonAlogrithm.
 # It then fills a dictionary with images and their duplicates
 def startSearchForDupes():
+    start = datetime.datetime.now()
     labelStatus.config(text="Start Scan")
     tk_root.update_idletasks()  # updates GUI
     imageSize = 200
@@ -67,7 +70,7 @@ def startSearchForDupes():
     for i in range(0, len(imageFilesInWorkingFolder)):
         labelStatus.config(text="File: " + str(i+1) + " of: " + str(len(imageFilesInWorkingFolder)))
         tk_root.update_idletasks()
-        print("File: " + str(i+1) + " of: " + str(len(imageFilesInWorkingFolder)))
+        # print("File: " + str(i+1) + " of: " + str(len(imageFilesInWorkingFolder)))
         imageA = cv2.imread(str(imageFilesInWorkingFolder[i]))
         try:
             imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
@@ -92,11 +95,22 @@ def startSearchForDupes():
                     (score, diff) = structural_similarity(imageA, imageB, multichannel=True, full=True)
                 except Exception as e:
                     print("Error checking for similarities")
-
                 if not checkDictForExistingKeys(imageFilesInWorkingFolder[i], image_score_dict):
                     createNewKeyInDict(imageFilesInWorkingFolder[i], image_score_dict)
                 addValueToDictKey(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], score, image_score_dict)
+
+                finish = datetime.datetime.now()
+                finish = (finish - start)
+                # print(finish.seconds)
+                eta = (finish.seconds / (i+1)) * len(imageFilesInWorkingFolder)
+                # print("eta: " + str(int(eta)))
+                labelTimeLeft.config(text="Time Left: " + str(int(eta) - finish.seconds) + " Seconds")
+                tk_root.update_idletasks()  # updates GUI
     dumpToJSON()
+    finish = datetime.datetime.now()
+    # print(finish - start)
+    labelTimeLeft.config(text="Total Time: " + str(finish - start))
+    tk_root.update_idletasks()  # updates GUI
 
 
 # Quit Program with shortcut
@@ -107,7 +121,7 @@ def quitProgram(event):
 def choseFolder():
     global pathToWorkingFolder
     pathToWorkingFolder = fd.askdirectory()
-    print(pathToWorkingFolder)
+    # print(pathToWorkingFolder)
     labelStatus.config(text="Folder Selected: " + pathToWorkingFolder)
     tk_root.update_idletasks()
 
@@ -125,12 +139,16 @@ tk_root.geometry("+{}+{}".format(positionRight, positionDown))
 
 # Buttons
 startScan = Button(tk_root, text="Start Scan", command=startSearchForDupes)
-startScan.grid(row=1, column=0)
+startScan.grid(row=2, column=0, columnspan=2)
 choseFolder = Button(tk_root, text="Chose Folder", command=choseFolder)
-choseFolder.grid(row=0, column=0)
+choseFolder.grid(row=1, column=0, columnspan=2)
 
 # Label
+labelStatus = Label(tk_root, text="Image Dedup by Image Content")
+labelStatus.grid(row=0, column=0, columnspan=2)
 labelStatus = Label(tk_root, text="Not in progress")
-labelStatus.grid(row=2, column=0)
+labelStatus.grid(row=3, column=0, columnspan=2)
+labelTimeLeft = Label(tk_root, text="Time Left")
+labelTimeLeft.grid(row=4, column=0, columnspan=2)
 
 mainloop()
