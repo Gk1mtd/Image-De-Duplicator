@@ -68,7 +68,7 @@ def startSearchForDupes():
     tk_root.update_idletasks()
     listOfAllImageFiles()
     for i in range(0, len(imageFilesInWorkingFolder)):
-        # print("File: " + str(i+1) + " of: " + str(len(imageFilesInWorkingFolder)))
+        print("I-File: " + str(i+1) + " of: " + str(len(imageFilesInWorkingFolder)))
         imageA = cv2.imread(str(imageFilesInWorkingFolder[i]))
         try:
             imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
@@ -81,6 +81,7 @@ def startSearchForDupes():
         for j in range(1 + i, len(imageFilesInWorkingFolder)):
             labelStatus.config(text="File: " + str(i + 1) + " of: " + str(len(imageFilesInWorkingFolder)) + " | " + str(imageFilesInWorkingFolder[j]))
             tk_root.update_idletasks()
+            print("J-File: " + str(j + 1) + " of: " + str(len(imageFilesInWorkingFolder)))
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j], image_score_dict):
                 imageB = cv2.imread(str(imageFilesInWorkingFolder[j]))
                 try:
