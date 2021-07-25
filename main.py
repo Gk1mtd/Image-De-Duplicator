@@ -58,7 +58,7 @@ def checkDictForExistingValues(value, dict):
 
 def dumpToJSON():
     global image_score_dict
-    with open(pathToWorkingFolder + "/duplicates.json", 'w') as outfile:
+    with open(pathToWorkingFolder + "/1_duplicates.json", 'w') as outfile:
         json.dump(image_score_dict, outfile)
 
 
@@ -109,6 +109,8 @@ def startSearchForDupes():
 
                 finish = datetime.datetime.now()
                 labelTimeLeft.config(text="Time spend: " + str(finish-start))
+                tk_root.update_idletasks()  # updates GUI
+                labelStatus.config(text="Task Done in: " + pathToWorkingFolder)
                 tk_root.update_idletasks()  # updates GUI
     dumpToJSON()
     finish = datetime.datetime.now()
