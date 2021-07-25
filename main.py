@@ -140,7 +140,7 @@ def startSearchThreading():
 # GUI
 # tk root
 tk_root = Tk()
-tk_root.geometry("300x150")
+tk_root.geometry("450x120")
 tk_root.bind("<Control-q>", quitProgram)  # binding shortcut ctrl+q to function quitProgram()
 tk_root.title("DeDup 1.0")
 # Gets both half the screen width/height and window width/height
@@ -150,18 +150,20 @@ positionDown = int((tk_root.winfo_screenheight() / 2) - tk_root.winfo_reqheight(
 tk_root.geometry("+{}+{}".format(positionRight, positionDown))
 
 # Buttons
-startScan = Button(tk_root, text="Start Scan", command=startSearchThreading)
-# startScan = Button(tk_root, text="Start Scan", command=startSearchForDupes)
-startScan.grid(row=2, column=0)
 choseFolder = Button(tk_root, text="Chose Folder", command=choseFolder)
-choseFolder.grid(row=1, column=0)
+startScan = Button(tk_root, text="Start Scan", command=startSearchThreading)
 
 # Label
-labelStatus = Label(tk_root, text="Image Dedup by Image Content")
-labelStatus.grid(row=0, column=0)
+labelHeadline = Label(tk_root, text="Image Dedup by Image Content")
 labelStatus = Label(tk_root, text="Not in progress")
-labelStatus.grid(row=3, column=0)
 labelTimeLeft = Label(tk_root, text="Time Spend")
-labelTimeLeft.grid(row=4, column=0)
 
+# packing
+labelHeadline.pack()
+choseFolder.pack()
+startScan.pack()
+labelStatus.pack()
+labelTimeLeft.pack()
+
+#GUI loop
 mainloop()
