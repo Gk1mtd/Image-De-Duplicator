@@ -1,13 +1,12 @@
 import datetime
-
-import cv2
-from skimage.metrics import structural_similarity
 import glob
 import json
 from threading import *
-import sys
 from tkinter import *
 from tkinter import filedialog as fd
+
+import cv2
+from skimage.metrics import structural_similarity
 
 # Variables and Objects
 global imageFilesInWorkingFolder
@@ -28,6 +27,7 @@ def listOfAllImageFiles():
     labelStatus.config(text="Searching for viable images 3/3")
     tk_root.update_idletasks()
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "/**/*.jpeg", recursive=True)]
+    print(imageFilesInWorkingFolder)
 
 
 # adds the path of imageA to the dictionary. imageA shall be the path and therefore an unique ID. this method
@@ -41,7 +41,7 @@ def addValueToDictKey(key, value, score, dict):
     dict[key].append((value, score))
 
 
-def checkDictForExistingKeys(key, dict):
+def checkDictForExistingKeys(key):
     if key in image_score_dict:
         return True
     else:
@@ -62,7 +62,7 @@ def dumpToJSON():
         json.dump(image_score_dict, outfile)
 
 
-# Essentialy takes all the filenames in the specified folder and runs it through the imageComparisonAlogrithm.
+# Essentially takes all the filenames in the specified folder and runs it through the imageComparison Algorithm.
 # It then fills a dictionary with images and their duplicates
 def startSearchForDupes():
     start = datetime.datetime.now()
@@ -77,12 +77,12 @@ def startSearchForDupes():
         imageA = cv2.imread(str(imageFilesInWorkingFolder[i]))
         try:
             imageA = cv2.cvtColor(imageA, cv2.COLOR_BGR2GRAY)
-        except:
-            pass
+        except Exception as e:
+            print("Color to Gray not possible: " + str(imageA) + str(e))
         try:
             imageA = cv2.resize(imageA, imageSize)
         except Exception as e:
-            print("Resizing not possible: " + str(imageA))
+            print("Resizing not possible: " + str(imageA) + str(e))
         for j in range(1 + i, len(imageFilesInWorkingFolder)):
             labelStatus.config(text="File: " + str(i + 1) + " of: " + str(len(imageFilesInWorkingFolder))
                                     + " | Cycle: " + str(j + 1) + " of: " + str(len(imageFilesInWorkingFolder)))
@@ -93,22 +93,22 @@ def startSearchForDupes():
                 imageB = cv2.imread(str(imageFilesInWorkingFolder[j]))
                 try:
                     imageB = cv2.cvtColor(imageB, cv2.COLOR_BGR2GRAY)
-                except:
-                    pass
+                except Exception as e:
+                    print("Color to Gray not possible: " + str(imageB) + str(e))
                 try:
                     imageB = cv2.resize(imageB, imageSize)
                 except Exception as e:
-                    print("Resizing not possible: " + str(imageB))
+                    print("Resizing not possible: " + str(imageB) + str(e))
                 try:
                     (score, diff) = structural_similarity(imageA, imageB, multichannel=True, full=True)
                 except Exception as e:
-                    print("Error checking for similarities")
-                if not checkDictForExistingKeys(imageFilesInWorkingFolder[i], image_score_dict):
+                    print("Error checking for similarities" + str(e))
+                if not checkDictForExistingKeys(imageFilesInWorkingFolder[i]):
                     createNewKeyInDict(imageFilesInWorkingFolder[i], image_score_dict)
                 addValueToDictKey(imageFilesInWorkingFolder[i], imageFilesInWorkingFolder[j], score, image_score_dict)
 
                 finish = datetime.datetime.now()
-                labelTimeLeft.config(text="Time spend: " + str(finish-start))
+                labelTimeLeft.config(text="Time spend: " + str(finish - start))
                 tk_root.update_idletasks()  # updates GUI
                 labelStatus.config(text="Task Done in: " + pathToWorkingFolder)
                 tk_root.update_idletasks()  # updates GUI
@@ -121,7 +121,7 @@ def startSearchForDupes():
 
 # Quit Program with shortcut
 def quitProgram(event):
-    sys.exit("ShortCut Quit: Eventmessage: " + str(event))
+    sys.exit("ShortCut Quit: Event Message: " + str(event))
 
 
 def choseFolder():
@@ -165,5 +165,5 @@ startScan.pack()
 labelStatus.pack()
 labelTimeLeft.pack()
 
-#GUI loop
+# GUI loop
 mainloop()
