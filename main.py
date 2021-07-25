@@ -4,6 +4,7 @@ import cv2
 from skimage.metrics import structural_similarity
 import glob
 import json
+from threading import *
 import sys
 from tkinter import *
 from tkinter import filedialog as fd
@@ -16,12 +17,16 @@ image_score_dict = {}
 
 # Searches through the designated work path and adds all files with specific post-fix to a list
 def listOfAllImageFiles():
-    labelStatus.config(text="Searching for viable images")
+    labelStatus.config(text="Searching for viable images 1/3")
     tk_root.update_idletasks()
     global imageFilesInWorkingFolder
     imageFilesInWorkingFolder = ""  # CLean Up of the list
     imageFilesInWorkingFolder = [f for f in glob.glob(pathToWorkingFolder + "/**/*.png", recursive=True)]
+    labelStatus.config(text="Searching for viable images 2/3")
+    tk_root.update_idletasks()
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "/**/*.jpg", recursive=True)]
+    labelStatus.config(text="Searching for viable images 3/3")
+    tk_root.update_idletasks()
     imageFilesInWorkingFolder += [f for f in glob.glob(pathToWorkingFolder + "/**/*.jpeg", recursive=True)]
 
 
@@ -79,6 +84,9 @@ def startSearchForDupes():
         except Exception as e:
             print("Resizing not possible: " + str(imageA))
         for j in range(1 + i, len(imageFilesInWorkingFolder)):
+            labelStatus.config(text="File: " + str(i + 1) + " of: " + str(len(imageFilesInWorkingFolder))
+                                    + " | Cycle: " + str(j + 1) + " of: " + str(len(imageFilesInWorkingFolder)))
+            tk_root.update_idletasks()  # updates GUI
             print("I-File: " + str(i + 1) + " of: " + str(len(imageFilesInWorkingFolder)))
             print("J-File: " + str(j + 1) + " of: " + str(len(imageFilesInWorkingFolder)))
             if not checkDictForExistingValues(imageFilesInWorkingFolder[j], image_score_dict):
@@ -122,9 +130,15 @@ def choseFolder():
     tk_root.update_idletasks()
 
 
+def startSearchThreading():
+    t1 = Thread(target=startSearchForDupes)
+    t1.start()
+
+
 # GUI
 # tk root
 tk_root = Tk()
+tk_root.geometry("300x150")
 tk_root.bind("<Control-q>", quitProgram)  # binding shortcut ctrl+q to function quitProgram()
 tk_root.title("DeDup 1.0")
 # Gets both half the screen width/height and window width/height
@@ -134,17 +148,18 @@ positionDown = int((tk_root.winfo_screenheight() / 2) - tk_root.winfo_reqheight(
 tk_root.geometry("+{}+{}".format(positionRight, positionDown))
 
 # Buttons
-startScan = Button(tk_root, text="Start Scan", command=startSearchForDupes)
-startScan.grid(row=2, column=0, columnspan=2)
+startScan = Button(tk_root, text="Start Scan", command=startSearchThreading)
+# startScan = Button(tk_root, text="Start Scan", command=startSearchForDupes)
+startScan.grid(row=2, column=0)
 choseFolder = Button(tk_root, text="Chose Folder", command=choseFolder)
-choseFolder.grid(row=1, column=0, columnspan=2)
+choseFolder.grid(row=1, column=0)
 
 # Label
 labelStatus = Label(tk_root, text="Image Dedup by Image Content")
-labelStatus.grid(row=0, column=0, columnspan=2)
+labelStatus.grid(row=0, column=0)
 labelStatus = Label(tk_root, text="Not in progress")
-labelStatus.grid(row=3, column=0, columnspan=2)
+labelStatus.grid(row=3, column=0)
 labelTimeLeft = Label(tk_root, text="Time Spend")
-labelTimeLeft.grid(row=4, column=0, columnspan=2)
+labelTimeLeft.grid(row=4, column=0)
 
 mainloop()
