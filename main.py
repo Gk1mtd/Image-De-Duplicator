@@ -88,7 +88,7 @@ def calculateDuplicates():
     listvariable = StringVar(value=listvariable)
 
     global listbox
-    listbox = Listbox(tk_root, listvariable=listvariable, height=20, width=80)
+    listbox = Listbox(tk_root, listvariable=listvariable, height=40, width=80)
     listbox.grid(row=9, column=0, columnspan=2)
     listbox.bind('<<ListboxSelect>>', items_selected)
 
